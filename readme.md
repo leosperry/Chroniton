@@ -1,7 +1,8 @@
 ## Synopsis
 
 A library for running tasks(jobs) on schedules. It supports:
-	* Strongly typed jobs
+
+* Strongly typed jobs
 	* Custom schedules
 	* Running jobs on multiple schedules
 	* Multiple jobs on a single schedule.

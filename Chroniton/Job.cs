@@ -25,7 +25,7 @@ namespace Chroniton
     public interface IJobBase
     {
         ScheduleMissedBehavior ScheduleMissedBehavior { get; }
-        void Abort();
+        //void Abort();
     }
 
     public interface IJob : IJobBase
@@ -56,6 +56,24 @@ namespace Chroniton
         public void Abort()
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public class SimpleParameterizedJob<T> : IParameterizedJob<T>
+    {
+        public ScheduleMissedBehavior ScheduleMissedBehavior { get; set; }
+            = ScheduleMissedBehavior.RunAgain;
+
+        Func<T,Task> _task;
+
+        public SimpleParameterizedJob(Func<T,Task> task)
+        {
+            _task = task;
+        }
+
+        public async Task Start(T parameter)
+        {
+            await _task(parameter);
         }
     }
 }

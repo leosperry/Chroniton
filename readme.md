@@ -1,30 +1,59 @@
 ## Synopsis
 
-At the top of the file there should be a short introduction and/ or overview that explains **what** the project is. This description should match descriptions added for package managers (Gemspec, package.json, etc.)
+A library for running tasks(jobs) on schedules. It supports:
+	* Strongly typed jobs
+	* Custom schedules
+	* Running jobs on multiple schedules
+	* Multiple jobs on a single schedule.
+	* Limiting the number of threads on which work is done
+	* Managing behaviors of jobs which run beyond their next scheduled time
+	* Dependency Injection initialization
 
 ## Code Example
 
-Show what the library does as concisely as possible, developers should be able to figure out **how** your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
+	static void Main(string[] args)
+	{
+		ISingularityFactory factory = new SingularityFactory();
+		ISingularity singularity = factory.GetSingularity();
+
+		var job = new SimpleParameterizedJob<string>(
+			anything => Task.Run(()=> Console.WriteLine(anything)));
+
+		var schedule = new EveryXTimeSchedule(TimeSpan.FromSeconds(1));
+
+		var scheduledJob = singularity.ScheduleParameterizedJob(
+			schedule, job, "Hello World", true); //starts immediately
+
+		var startTime = DateTime.UtcNow.Add(TimeSpan.FromSeconds(5));
+
+		var scheduledJob2 = singularity.ScheduleParameterizedJob(
+			schedule, job, "Hello World 2", startTime);
+
+		singularity.Start();
+
+		Thread.Sleep(10 * 1000);
+
+		singularity.StopScheduledJob(scheduledJob);
+
+		Thread.Sleep(5 * 1000);
+		
+		singularity.Stop();
+
+		Console.ReadKey();
+	}
 
 ## Motivation
 
-A short description of the motivation behind the creation and maintenance of the project. This should explain **why** the project exists.
+This project was inspired for the need to have a strongly typed .NET solution for running tasks on schedules. 
 
 ## Installation
 
 Provide code examples and explanations of how to get the project.
 
-## API Reference
-
-Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
-
-## Tests
-
-Describe and show how to run the tests with code examples.
-
 ## Contributors
 
-Let people know how they can dive into the project, include important links to things like issue trackers, irc, twitter accounts if applicable.
+Created by : Leonard Sperry
+leosperry@outlook.com
 
 ## License
 

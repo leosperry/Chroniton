@@ -121,7 +121,6 @@ namespace Collective
         public bool FindExtract(T item)
         {
             var success = false;
-            item = default(T);
             lock (_loc)
             {
                 for (int i = 0; i < _count; i++)

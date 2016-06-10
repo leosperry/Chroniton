@@ -58,5 +58,11 @@ leosperry@outlook.com
 
 ## License
 
-A short snippet describing the license (MIT, Apache, etc.)
+Licensed under the MIT License
+
+## Future Features
+
+* Serialization
+* More Built in Schedule types
+* 
 

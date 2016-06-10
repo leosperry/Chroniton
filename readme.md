@@ -3,12 +3,12 @@
 A library for running tasks(jobs) on schedules. It supports:
 
 * Strongly typed jobs
-	* Custom schedules
-	* Running jobs on multiple schedules
-	* Multiple jobs on a single schedule.
-	* Limiting the number of threads on which work is done
-	* Managing behaviors of jobs which run beyond their next scheduled time
-	* Dependency Injection initialization
+* Custom schedules
+* Running jobs on multiple schedules
+* Multiple jobs on a single schedule.
+* Limiting the number of threads on which work is done
+* Managing behaviors of jobs which run beyond their next scheduled time
+* Dependency Injection initialization
 
 ## Code Example
 

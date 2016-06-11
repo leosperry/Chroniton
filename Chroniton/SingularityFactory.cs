@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Chroniton
 {
+    /// <summary>
+    /// A factory for getting the singleton instance of the Singularity
+    /// Useful when using dependency injection.
+    /// </summary>
     public interface ISingularityFactory
     {
         ISingularity GetSingularity();

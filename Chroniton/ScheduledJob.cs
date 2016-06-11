@@ -10,33 +10,17 @@ namespace Chroniton
     {
         IJobBase Job { get; }
         ISchedule Schedule { get; }
-        JobStatus Status { get; }
         DateTime NextRun { get; }
     }
 
-    public interface IScheduledParameterizedJob<T> : IScheduledJob
+    internal class ScheduledJob : IScheduledJob, IComparable<IScheduledJob>
     {
-        T Parameter { get; set; }
-    }
+        public IJobBase Job { get; internal set; }
 
-    public class ScheduledJob : IScheduledJob, IComparable<IScheduledJob>
-    {
-        public IJobBase Job
-        {
-            get; internal set;
-        }
+        public ISchedule Schedule { get; internal set; }
 
-        public ISchedule Schedule
-        {
-            get; internal set;
-        }
 
-        public JobStatus Status { get; internal set; }
-
-        public DateTime NextRun
-        {
-            get; internal set;
-        }
+        public DateTime NextRun { get; internal set; }
 
         public int CompareTo(IScheduledJob other)
         {
@@ -44,10 +28,5 @@ namespace Chroniton
         }
 
         internal Func<Task> JobTask { get; set; }
-    }
-
-    public class ScheduledParameterizedJob<T> : ScheduledJob, IScheduledParameterizedJob<T>
-    {
-        public T Parameter { get; set; }
     }
 }

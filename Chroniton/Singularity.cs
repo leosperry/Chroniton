@@ -9,40 +9,6 @@ using Collective;
 
 namespace Chroniton
 {
-    public class ScheduledJobEventArgs
-    {
-        public IJobBase Job { get; internal set; }
-        public ISchedule Schedule { get; internal set; }
-        public DateTime ScheduledTime { get; internal set; }
-
-        public ScheduledJobEventArgs(IScheduledJob scheduledJob)
-        {
-            Job = scheduledJob.Job;
-            Schedule = scheduledJob.Schedule;
-            ScheduledTime = scheduledJob.NextRun;
-        }
-    }
-
-    public delegate void JobEventHandler(ScheduledJobEventArgs job);
-    public delegate void JobExceptionHandler(ScheduledJobEventArgs job, Exception e);
-    
-    public interface ISingularity : IDisposable
-    {
-        int MaximumThreads { get; set; }
-        void Start();
-        void Stop();
-        IScheduledJob ScheduleJob(ISchedule schedule, IJob job, bool runImmediately);
-        IScheduledJob ScheduleJob(ISchedule schedule, IJob job, DateTime firstRun);
-        IScheduledJob ScheduleParameterizedJob<T>(ISchedule schedule, IParameterizedJob<T> job, T parameter, bool runImmediately);
-        IScheduledJob ScheduleParameterizedJob<T>(ISchedule schedule, IParameterizedJob<T> job, T parameter, DateTime firstRun);
-        bool StopScheduledJob(IScheduledJob scheduledJob);
-
-        event JobEventHandler OnScheduled;
-        event JobExceptionHandler OnScheduleError;
-        event JobEventHandler OnSuccess;
-        event JobExceptionHandler OnJobError;
-    }
-
     public class Singularity : ISingularity
     {
         int _spinWait = 2;
@@ -136,6 +102,9 @@ namespace Chroniton
             }//something said stop
         }
 
+        /// <summary>
+        /// thread for executing jobs
+        /// </summary>
         private void jobWatcher()
         {
             while (_started)
@@ -248,11 +217,10 @@ namespace Chroniton
 
         public IScheduledJob ScheduleParameterizedJob<T>(ISchedule schedule, IParameterizedJob<T> job, T parameter, DateTime firstRun)
         {
-            var scheduledJob = new ScheduledParameterizedJob<T>()
+            var scheduledJob = new ScheduledJob()
             {
                 Job = job,
                 Schedule = schedule,
-                Parameter = parameter,
                 JobTask = new Func<Task>(() => job.Start(parameter))
             };
 

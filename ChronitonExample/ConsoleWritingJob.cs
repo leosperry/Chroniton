@@ -9,6 +9,8 @@ namespace ChronitonExample
 {
     class ConsoleWritingJob : IJob
     {
+        public string Name { get; set; }
+
         int _runNumber = 0;
 
         public ScheduleMissedBehavior ScheduleMissedBehavior
@@ -34,6 +36,8 @@ namespace ChronitonExample
     class NamedConsoleWritingJob : IParameterizedJob<string>
     {
         int _runNumber = 0;
+
+        public string Name { get; set; }
 
         public ScheduleMissedBehavior ScheduleMissedBehavior
         {

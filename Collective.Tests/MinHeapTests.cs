@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TheCollective;
 
@@ -143,6 +144,26 @@ namespace Collective.Tests
                     int item;
                     Assert.True(heapUnderTest.TryExtract(out item));
                     Assert.AreEqual(42, item);
+                }
+            }
+
+            public class FindExtractTests : MethodTests
+            {
+                [Test]
+                public void ShouldRemoveTheCorrectElementAndMaintainHeapProperty()
+                {
+                    heapUnderTest.AddRange(Enumerable.Range(1, 5));
+                    heapUnderTest.FindExtract(3);
+                    int i = -1,j;
+                    List<int> ints = new List<int>();
+                    while (heapUnderTest.Count > 0)
+                    {
+                        j = heapUnderTest.Extract();
+                        Assert.True(i < j);
+                        ints.Add(j);
+                        i = j;
+                    }
+                    Assert.True(ints.All(k => k != 3));
                 }
             }
 

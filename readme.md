@@ -42,6 +42,12 @@ A library for running tasks(jobs) on schedules. It supports:
 
 		Console.ReadKey();
 	}
+	
+In the above example, here's what happens:
+The first job starts immediately and print's "Hello World" once every second.
+Five seconds later the second job starts and prints "Hello World2" every second.
+Five seconds later the first job stops and only the second job is running.
+Five seconds later, Stop() is called and the second job also stops.
 
 ## Motivation
 
@@ -49,7 +55,7 @@ This project was inspired for the need to have a strongly typed .NET solution fo
 
 ## Installation
 
-Provide code examples and explanations of how to get the project.
+nuget instructions will go here
 
 ## Contributors
 

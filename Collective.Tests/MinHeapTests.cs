@@ -1,8 +1,7 @@
-﻿using System;
-//using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Collective;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using System;
 using System.Linq;
+using TheCollective;
 
 namespace Collective.Tests
 {

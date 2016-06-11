@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chroniton", "Chroniton\Chro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChronitonExample", "ChronitonExample\ChronitonExample.csproj", "{2FB4E5A3-6ACD-4F64-A01E-D00E75F60FDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Collective", "Collective\Collective.csproj", "{236F82D0-462D-4424-A5D8-EC2F1B9DD61B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheCollective", "Collective\TheCollective.csproj", "{236F82D0-462D-4424-A5D8-EC2F1B9DD61B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Collective.Tests", "Collective.Tests\Collective.Tests.csproj", "{2D94D2B5-3BE8-4A09-992B-F8CB7F92164D}"
 EndProject

@@ -7,8 +7,8 @@
     <ProjectGuid>{236F82D0-462D-4424-A5D8-EC2F1B9DD61B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Collective</RootNamespace>
-    <AssemblyName>Collective</AssemblyName>
+    <RootNamespace>TheCollective</RootNamespace>
+    <AssemblyName>TheCollective</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Chroniton")]
-[assembly: AssemblyDescription("A library for running tasks on schedules.")]
+[assembly: AssemblyTitle("Chroniton.Tests")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Chroniton")]
-[assembly: AssemblyCopyright("Copyright © Leonard Sperry 2016")]
+[assembly: AssemblyProduct("Chroniton.Tests")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3ff8b693-0586-4199-afec-023d41ce95ad")]
+[assembly: Guid("c64822ff-70b5-422d-9e49-9ec4cba24b00")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -9,7 +9,7 @@ namespace Chroniton
 {
     public class Singularity : ISingularity
     {
-        int _spinWait = 2;
+        int _spinWait = 5;
         MinHeap<ScheduledJob> _scheduledQueue = new MinHeap<ScheduledJob>();
         ConcurrentQueue<ScheduledJob> _jobQueue = new ConcurrentQueue<ScheduledJob>();
         ConcurrentQueue<Task> _doneTasks = new ConcurrentQueue<Task>();
@@ -56,12 +56,13 @@ namespace Chroniton
                 {
                     if (!_started)
                     {
+                        _started = true;
+
                         _schedulingThread = new Thread(this.run);
                         _schedulingThread.Start();
 
                         _jobRunningThread = new Thread(this.jobWatcher);
                         _jobRunningThread.Start();
-                        _started = true;
                     }
                 }
             }
@@ -76,7 +77,17 @@ namespace Chroniton
             _started = false;
             _schedulingThread.Join();
             _jobRunningThread.Join();
-            Task.WaitAll(_tasks.ToArray());
+            ScheduledJob queuedJob;
+            Task doneob;
+            var taskArray = _tasks.ToArray();
+
+            if (taskArray.Length > 0)
+            {
+                Task.WaitAll(_tasks.ToArray());
+            }
+            while (_scheduledQueue.Count > 0) { _scheduledQueue.Extract(); }
+            while (_jobQueue.TryDequeue(out queuedJob)) { }
+            while (_doneTasks.TryDequeue(out doneob)) { }
         }
 
         /// <summary>
@@ -117,7 +128,7 @@ namespace Chroniton
                 ScheduledJob job;
                 if (_jobQueue.TryDequeue(out job))
                 {
-                    if (_tasks.Count > MaximumThreads)
+                    if (_tasks.Count >= MaximumThreads)
                     {
                         Task.WaitAny(_tasks.ToArray());
                     }
@@ -131,7 +142,7 @@ namespace Chroniton
         {
             if (_started)
             {
-                var task = Task.Run(() => job.JobTask());
+                var task = Task.Run(job.JobTask);
                 _tasks.Add(task);
                 task.ContinueWith(t => jobEnd(task, job));
             }
@@ -200,7 +211,7 @@ namespace Chroniton
             {
                 Job = job,
                 Schedule = schedule,
-                JobTask = job.Start
+                JobTask = new Func<Task>(() => job.Start())
             };
 
             queueJob(firstRun, scheduledJob);
@@ -242,11 +253,6 @@ namespace Chroniton
                 return false;
             }
             return _scheduledQueue.FindExtract(job);
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
 
         #region Events

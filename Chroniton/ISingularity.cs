@@ -30,7 +30,7 @@ namespace Chroniton
     public delegate void JobEventHandler(ScheduledJobEventArgs job);
     public delegate void JobExceptionHandler(ScheduledJobEventArgs job, Exception e);
 
-    public interface ISingularity : IDisposable
+    public interface ISingularity
     {
         /// <summary>
         /// The maximum number of Tasks to run simultaneously

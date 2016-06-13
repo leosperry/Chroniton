@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Chroniton
+namespace Chroniton.Jobs
 {
     /// <summary>
     /// A simple job

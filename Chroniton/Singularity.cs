@@ -46,7 +46,44 @@ namespace Chroniton
             Stop();
         }
 
-        public int MaximumThreads { get; set; } = 5;
+        int _maxThreads = 5;
+        public int MaximumThreads
+        {
+            get
+            {
+                _lock.EnterReadLock();
+                try
+                {
+                    return _maxThreads;
+                }
+                finally
+                {
+                    if (_lock.IsReadLockHeld) _lock.ExitReadLock();
+                }
+            }
+            set
+            {
+                _lock.EnterWriteLock();
+                try
+                {
+                    _maxThreads = value;
+                }
+                finally
+                {
+                    if (_lock.IsWriteLockHeld) _lock.ExitWriteLock();
+                }
+            }
+        }
+
+        public bool IsStarted
+        {
+            get
+            {
+                return _started;
+            }
+        }
+
+        ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
         public void Start()
         {
@@ -83,7 +120,14 @@ namespace Chroniton
 
             if (taskArray.Length > 0)
             {
-                Task.WaitAll(_tasks.ToArray());
+                try
+                {
+                    Task.WaitAll(_tasks.ToArray());
+                }
+                catch (Exception)
+                {
+                    //what to do with it
+                }
             }
             while (_scheduledQueue.Count > 0) { _scheduledQueue.Extract(); }
             while (_jobQueue.TryDequeue(out queuedJob)) { }
@@ -156,7 +200,8 @@ namespace Chroniton
             }
             else
             {
-                Task.Run(() => _onJobError?.Invoke(new ScheduledJobEventArgs(job), t.Exception.InnerException));
+                Task.Run(() => _onJobError?.Invoke(new ScheduledJobEventArgs(job),
+                    t.Exception is AggregateException? t.Exception.InnerException : t.Exception));
             }
             _doneTasks.Enqueue(t);
             setNextExecution(job);
@@ -164,6 +209,10 @@ namespace Chroniton
 
         private void setNextExecution(ScheduledJob job)
         {
+            if (job.PreventReschedule)
+            {
+                return;
+            }
             DateTime next, now = DateTime.UtcNow;
             try
             {
@@ -252,6 +301,8 @@ namespace Chroniton
             {
                 return false;
             }
+            job.PreventReschedule = true;
+            //find a way to stop queued jobs from getting scheduled again
             return _scheduledQueue.FindExtract(job);
         }
 

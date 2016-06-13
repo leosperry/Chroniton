@@ -48,7 +48,8 @@
     <Compile Include="ScheduleMissedBehavior.cs" />
     <Compile Include="Schedules\ConstantSchedule.cs" />
     <Compile Include="Schedules\EveryXTimeSchedule.cs" />
-    <Compile Include="SimpleJob.cs" />
+    <Compile Include="Jobs\SimpleJob.cs" />
+    <Compile Include="Schedules\SimpleSchedule.cs" />
     <Compile Include="Singularity.cs" />
     <Compile Include="SingularityFactory.cs" />
   </ItemGroup>

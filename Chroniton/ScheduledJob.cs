@@ -16,7 +16,6 @@ namespace Chroniton
 
         public ISchedule Schedule { get; internal set; }
 
-
         public DateTime NextRun { get; internal set; }
 
         public int CompareTo(IScheduledJob other)
@@ -25,5 +24,7 @@ namespace Chroniton
         }
 
         internal Func<Task> JobTask { get; set; }
+
+        internal bool PreventReschedule { get; set; } = false;
     }
 }

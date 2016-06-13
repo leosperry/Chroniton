@@ -37,6 +37,8 @@ namespace Chroniton
         /// </summary>
         int MaximumThreads { get; set; }
 
+        bool IsStarted { get; }
+
         /// <summary>
         /// Starts the singularity and begins processing jobs
         /// </summary>

@@ -20,7 +20,15 @@ namespace TheCollective
             _hashSet = new HashSet<T>(collection);
         }
 
-        public int Count => _hashSet.Count;
+        public int Count
+        {
+            get
+            {
+                int cnt = 0;
+                readLock(() => cnt = _hashSet.Count);
+                return cnt;
+            }
+        }
 
         bool ICollection<T>.IsReadOnly => false;
 

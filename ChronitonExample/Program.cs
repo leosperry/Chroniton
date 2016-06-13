@@ -7,6 +7,7 @@ using Chroniton;
 using Microsoft.Practices.Unity;
 using Chroniton.Schedules;
 using System.Threading;
+using Chroniton.Jobs;
 
 namespace ChronitonExample
 {

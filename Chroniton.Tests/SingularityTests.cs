@@ -191,12 +191,11 @@ namespace Chroniton.Tests
                 {
                     delayReset = new ManualResetEvent(false);
                     UnderTest.MaximumThreads = 1;
-                    longRunningJob = new SimpleJob(() => Task.Delay(2000));
+                    longRunningJob = new SimpleJob(async () => await Task.Delay(2000));
                     waitingJob = new SimpleJob(() => Task.Run(() => delayReset.Set()));
                 }
 
                 [Test]
-                [Ignore("passes by itself, fails when run with other tests")]
                 public void ShouldWaitAndExecute()
                 {
                     UnderTest.ScheduleJob(MockSchedule.Object, longRunningJob, true);
@@ -205,7 +204,7 @@ namespace Chroniton.Tests
                     UnderTest.Start();
 
                     Assert.False(delayReset.WaitOne(200));
-                    Assert.True(delayReset.WaitOne(3000));
+                    Assert.True(delayReset.WaitOne(10000));
                 }
             }
 
@@ -379,20 +378,28 @@ namespace Chroniton.Tests
                 }
 
                 [Test]
-                [Ignore("passes by itself, fails when run with other tests")]
                 public void ShouldNotReschedule()
                 {
+                    UnderTest.MaximumThreads = 1;
+
                     ManualResetEvent removedJobManual = new ManualResetEvent(false);
-                    var longRunningJob = new SimpleJob(() => Task.Delay(2000));
+                    var longRunningJob = new SimpleJob(async () => await Task.Delay(5000))
+                    {
+                        Name= "long running job"
+                    };
                     UnderTest.ScheduleJob(TestSchedule, longRunningJob, true);
-                    var jobToBeRemoved = new SimpleJob(() => Task.Run(()=> removedJobManual.Set()));
+                    string state = "never run";
+                    var jobToBeRemoved = new SimpleJob(() => Task.Run(() => state = "I ran"))
+                    {
+                        Name = "job to be removed"
+                    };
 
                     var scheduledJob = UnderTest.ScheduleJob(TestSchedule, jobToBeRemoved, true);
                     UnderTest.Start();
 
                     UnderTest.StopScheduledJob(scheduledJob);
 
-                    Assert.False(removedJobManual.WaitOne(2000));
+                    Assert.AreEqual("never run", state);
                 }
             }
         }

@@ -16,7 +16,7 @@ namespace Chroniton
         ConcurrentHashSet<Task> _tasks = new ConcurrentHashSet<Task>();
 
         Thread _schedulingThread = null;
-        Thread _jobRunningThread = null;
+        Thread _jobWatcherThread = null;
         object _startStopLoc = new { };
         bool _started = false;
 
@@ -46,6 +46,7 @@ namespace Chroniton
             Stop();
         }
 
+        ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
         int _maxThreads = 5;
         public int MaximumThreads
         {
@@ -83,8 +84,6 @@ namespace Chroniton
             }
         }
 
-        ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
-
         public void Start()
         {
             if (!_started)
@@ -98,8 +97,8 @@ namespace Chroniton
                         _schedulingThread = new Thread(this.run);
                         _schedulingThread.Start();
 
-                        _jobRunningThread = new Thread(this.jobWatcher);
-                        _jobRunningThread.Start();
+                        _jobWatcherThread = new Thread(this.jobWatcher);
+                        _jobWatcherThread.Start();
                     }
                 }
             }
@@ -113,22 +112,12 @@ namespace Chroniton
         {
             _started = false;
             _schedulingThread.Join();
-            _jobRunningThread.Join();
+            _jobWatcherThread.Join();
+
             ScheduledJob queuedJob;
             Task doneob;
             var taskArray = _tasks.ToArray();
 
-            if (taskArray.Length > 0)
-            {
-                try
-                {
-                    Task.WaitAll(_tasks.ToArray());
-                }
-                catch (Exception)
-                {
-                    //what to do with it
-                }
-            }
             while (_scheduledQueue.Count > 0) { _scheduledQueue.Extract(); }
             while (_jobQueue.TryDequeue(out queuedJob)) { }
             while (_doneTasks.TryDequeue(out doneob)) { }
@@ -160,25 +149,30 @@ namespace Chroniton
         /// </summary>
         private void jobWatcher()
         {
+            Task done;
             while (_started)
             {
-                //clean up done tasks
-                Task done;
                 while (_doneTasks.TryDequeue(out done))
                 {
                     _tasks.Remove(done);
                 }
 
                 ScheduledJob job;
-                if (_jobQueue.TryDequeue(out job))
+                if (_jobQueue.TryDequeue(out job) && !job.PreventReschedule)
                 {
-                    if (_tasks.Count >= MaximumThreads)
+                    SpinWait.SpinUntil(() => _tasks.Count - _doneTasks.Count < this.MaximumThreads);
+                    if (!job.PreventReschedule)
                     {
-                        Task.WaitAny(_tasks.ToArray());
+                        runJob(job);
                     }
-                    runJob(job);
                 }
                 Thread.SpinWait(_spinWait);
+            }
+            SpinWait.SpinUntil(() => _tasks.Count - _doneTasks.Count < this.MaximumThreads);
+            Task.WaitAll(_tasks.ToArray());
+            while (_doneTasks.TryDequeue(out done))
+            {
+                _tasks.Remove(done);
             }
         }
 
@@ -296,13 +290,8 @@ namespace Chroniton
 
         public bool StopScheduledJob(IScheduledJob scheduledJob)
         {
-            ScheduledJob job = scheduledJob as ScheduledJob;
-            if (job == null)
-            {
-                return false;
-            }
+            ScheduledJob job = (ScheduledJob)scheduledJob;
             job.PreventReschedule = true;
-            //find a way to stop queued jobs from getting scheduled again
             return _scheduledQueue.FindExtract(job);
         }
 

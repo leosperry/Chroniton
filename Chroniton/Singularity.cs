@@ -115,12 +115,11 @@ namespace Chroniton
             _jobWatcherThread.Join();
 
             ScheduledJob queuedJob;
-            Task doneob;
-            var taskArray = _tasks.ToArray();
+            Task donejob;
 
             while (_scheduledQueue.Count > 0) { _scheduledQueue.Extract(); }
             while (_jobQueue.TryDequeue(out queuedJob)) { }
-            while (_doneTasks.TryDequeue(out doneob)) { }
+            while (_doneTasks.TryDequeue(out donejob)) { }
         }
 
         /// <summary>

@@ -11,43 +11,33 @@ A library for running tasks(jobs) on schedules. It supports:
 * Dependency Injection initialization
 
 ## Code Example
+```C#
+    var singularity = Singularity.Instance;
 
-        static void Main(string[] args)
-        {
-            UnityContainer container = new UnityContainer();
+    var job = new SimpleParameterizedJob<string>(
+        (parameter, scheduledTime) => Task.Run(() => 
+        Console.WriteLine($"{parameter}\tscheduled: {scheduledTime.ToString("o")}")));
 
-            container.RegisterType<ISingularityFactory, SingularityFactory>();
+    var schedule = new EveryXTimeSchedule(TimeSpan.FromSeconds(1));
 
-            var factory = container.Resolve<ISingularityFactory>();
-            var singularity = factory.GetSingularity();
+    var scheduledJob = singularity.ScheduleParameterizedJob(
+        schedule, job, "Hello World", true); //starts immediately
 
-            var job = new SimpleParameterizedJob<string>(
-                (parameter, scheduledTime) => Task.Run(() => 
-                Console.WriteLine($"{parameter}\tscheduled: {scheduledTime.ToString("o")}")));
+    var startTime = DateTime.UtcNow.Add(TimeSpan.FromSeconds(5));
 
-            var schedule = new EveryXTimeSchedule(TimeSpan.FromSeconds(1));
+    var scheduledJob2 = singularity.ScheduleParameterizedJob(
+        schedule, job, "Hello World 2", startTime);
 
-            var scheduledJob = singularity.ScheduleParameterizedJob(
-                schedule, job, "Hello World", true); //starts immediately
+    singularity.Start();
 
-            var startTime = DateTime.UtcNow.Add(TimeSpan.FromSeconds(5));
+    Thread.Sleep(10 * 1000);
 
-            var scheduledJob2 = singularity.ScheduleParameterizedJob(
-                schedule, job, "Hello World 2", startTime);
+    singularity.StopScheduledJob(scheduledJob);
 
-            singularity.Start();
+    Thread.Sleep(5 * 1000);
 
-            Thread.Sleep(10 * 1000);
-
-            singularity.StopScheduledJob(scheduledJob);
-
-            Thread.Sleep(5 * 1000);
-
-            singularity.Stop();
-
-            Console.ReadKey();
-        }
-
+    singularity.Stop();
+'''
 	
 In the above example, here's what happens:
 The first job starts immediately and print's "Hello World" once every second.

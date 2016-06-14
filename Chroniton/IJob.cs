@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Chroniton
 {
@@ -21,7 +22,7 @@ namespace Chroniton
         /// is called when the job is scheduled to run
         /// </summary>
         /// <returns>A task to run asynchronously</returns>
-        Task Start();
+        Task Start(DateTime scheduledTime);
     }
 
     public interface IParameterizedJob<T> : IJobBase
@@ -30,6 +31,6 @@ namespace Chroniton
         /// is called when the job is scheduled to run
         /// </summary>
         /// <returns>A task to run asynchronously</returns>
-        Task Start(T parameter);
+        Task Start(T parameter, DateTime scheduledTime);
     }
 }

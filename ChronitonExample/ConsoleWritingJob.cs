@@ -26,7 +26,7 @@ namespace ChronitonExample
             throw new NotImplementedException();
         }
 
-        public async Task Start()
+        public async Task Start(DateTime scheduledTime)
         {
             await Task.Delay(500);
             Console.WriteLine($"on success {++_runNumber}");
@@ -52,7 +52,7 @@ namespace ChronitonExample
             throw new NotImplementedException();
         }
 
-        public async Task Start(string parameter)
+        public async Task Start(string parameter, DateTime scheduledTime)
         {
             await Task.Delay(500);
             Console.WriteLine($"success {++_runNumber} {parameter}");

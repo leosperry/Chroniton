@@ -13,14 +13,14 @@ namespace Chroniton.Jobs
         public virtual ScheduleMissedBehavior ScheduleMissedBehavior { get; set; }
             = ScheduleMissedBehavior.RunAgain;
 
-        Func<Task> _task;
+        Func<DateTime, Task> _task;
 
         /// <summary>
         /// Initializes a new instance of a simple job
         /// </summary>
         /// <param name="task">A function which returns the task to run when
         /// the job is started</param>
-        public SimpleJob(Func<Task> task)
+        public SimpleJob(Func<DateTime, Task> task)
         {
             _task = task;
         }
@@ -31,15 +31,15 @@ namespace Chroniton.Jobs
         /// <param name="task">A function which returns the task to run when
         /// the job is started</param>
         /// <param name="name">A name for the job</param>
-        public SimpleJob(Func<Task> task, string name)
+        public SimpleJob(Func<DateTime, Task> task, string name)
         {
             _task = task;
             this.Name = name;
         }
 
-        public async Task Start()
+        public async Task Start(DateTime scheduledTime)
         {
-            await _task();
+            await _task(scheduledTime);
         }
     }
 
@@ -54,14 +54,14 @@ namespace Chroniton.Jobs
         public virtual ScheduleMissedBehavior ScheduleMissedBehavior { get; set; }
             = ScheduleMissedBehavior.RunAgain;
 
-        Func<T, Task> _task;
+        Func<T, DateTime, Task> _task;
 
         /// <summary>
         /// Initializes a new instance of a simple job which takes a parameter
         /// </summary>
         /// <param name="task">A function which returns the task to run when
         /// the job is started</param>
-        public SimpleParameterizedJob(Func<T, Task> task)
+        public SimpleParameterizedJob(Func<T, DateTime, Task> task)
         {
             _task = task;
         }
@@ -73,15 +73,15 @@ namespace Chroniton.Jobs
         /// the job is started</param>
         /// <param name="name">A name for the job</param>
 
-        public SimpleParameterizedJob(Func<T, Task> task, string name)
+        public SimpleParameterizedJob(Func<T, DateTime, Task> task, string name)
         {
             _task = task;
             this.Name = name;
         }
 
-        public async Task Start(T parameter)
+        public async Task Start(T parameter, DateTime scheduledTime)
         {
-            await _task(parameter);
+            await _task(parameter, scheduledTime);
         }
     }
 }

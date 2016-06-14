@@ -37,7 +37,7 @@ A library for running tasks(jobs) on schedules. It supports:
     Thread.Sleep(5 * 1000);
 
     singularity.Stop();
-'''
+```
 	
 In the above example, here's what happens:
 The first job starts immediately and print's "Hello World" once every second.

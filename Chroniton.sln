@@ -1,23 +1,41 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{CC43AD4D-6FE9-4F04-877D-3B72B4E000E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chroniton.Classic", "Chroniton.Classic\Chroniton.Classic.csproj", "{18BF0C28-E729-4662-9E61-3BF76237282B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example", "Example", "{A65E0161-1D08-49C6-9C1B-9E6188AF8C13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chroniton.Classic.Example", "Chroniton.Classic.Example\Chroniton.Classic.Example.csproj", "{2FB4E5A3-6ACD-4F64-A01E-D00E75F60FDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chroniton", "Chroniton\Chroniton.csproj", "{18BF0C28-E729-4662-9E61-3BF76237282B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheCollective.Classic", "TheCollective.Classic\TheCollective.Classic.csproj", "{236F82D0-462D-4424-A5D8-EC2F1B9DD61B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChronitonExample", "ChronitonExample\ChronitonExample.csproj", "{2FB4E5A3-6ACD-4F64-A01E-D00E75F60FDB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheCollective.Classic.Tests", "TheCollective.Classic.Tests\TheCollective.Classic.Tests.csproj", "{2D94D2B5-3BE8-4A09-992B-F8CB7F92164D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheCollective", "Collective\TheCollective.csproj", "{236F82D0-462D-4424-A5D8-EC2F1B9DD61B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chroniton.Classic.Tests", "Chroniton.Classic.Tests\Chroniton.Classic.Tests.csproj", "{C64822FF-70B5-422D-9E49-9EC4CBA24B00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Collective.Tests", "Collective.Tests\Collective.Tests.csproj", "{2D94D2B5-3BE8-4A09-992B-F8CB7F92164D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{F1CCA639-DD6A-4F6B-A93B-22CF2697B96F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chroniton.Tests", "Chroniton.Tests\Chroniton.Tests.csproj", "{C64822FF-70B5-422D-9E49-9EC4CBA24B00}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ChronitonShared", "ChronitonShared\ChronitonShared.shproj", "{4DBD42D5-A0EA-44B1-B014-701B53781916}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TheCollectiveShared", "TheCollectiveShared\TheCollectiveShared.shproj", "{2B67F6ED-293A-4E61-9813-3778F28F7AFC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Classic", "Classic", "{1D6231C6-F8D6-436A-83E1-F40903B33D65}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetCore", "NetCore", "{FA6A6F07-09CC-4754-8A12-B1B935F5AE98}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Chroniton.NetCore", "Chroniton.NetCore\Chroniton.NetCore.xproj", "{8702E965-4C7A-43A5-A333-01E66AC8F370}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TheCollective.NetCore", "TheCollective.NetCore\TheCollective.NetCore.xproj", "{1F46E36D-E3F4-4C04-A1EF-F840B43EBD2F}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Chroniton.NetCore.Example", "Chroniton.NetCore.Example\Chroniton.NetCore.Example.xproj", "{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ChronitonShared\ChronitonShared.projitems*{18bf0c28-e729-4662-9e61-3bf76237282b}*SharedItemsImports = 4
+		TheCollectiveShared\TheCollectiveShared.projitems*{236f82d0-462d-4424-a5d8-ec2f1b9dd61b}*SharedItemsImports = 4
+		TheCollectiveShared\TheCollectiveShared.projitems*{2b67f6ed-293a-4e61-9813-3778f28f7afc}*SharedItemsImports = 13
+		ChronitonShared\ChronitonShared.projitems*{4dbd42d5-a0ea-44b1-b014-701b53781916}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
@@ -65,15 +83,44 @@ Global
 		{C64822FF-70B5-422D-9E49-9EC4CBA24B00}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C64822FF-70B5-422D-9E49-9EC4CBA24B00}.Release|x86.ActiveCfg = Release|Any CPU
 		{C64822FF-70B5-422D-9E49-9EC4CBA24B00}.Release|x86.Build.0 = Release|Any CPU
+		{8702E965-4C7A-43A5-A333-01E66AC8F370}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8702E965-4C7A-43A5-A333-01E66AC8F370}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8702E965-4C7A-43A5-A333-01E66AC8F370}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8702E965-4C7A-43A5-A333-01E66AC8F370}.Debug|x86.Build.0 = Debug|Any CPU
+		{8702E965-4C7A-43A5-A333-01E66AC8F370}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8702E965-4C7A-43A5-A333-01E66AC8F370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8702E965-4C7A-43A5-A333-01E66AC8F370}.Release|x86.ActiveCfg = Release|Any CPU
+		{8702E965-4C7A-43A5-A333-01E66AC8F370}.Release|x86.Build.0 = Release|Any CPU
+		{1F46E36D-E3F4-4C04-A1EF-F840B43EBD2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F46E36D-E3F4-4C04-A1EF-F840B43EBD2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F46E36D-E3F4-4C04-A1EF-F840B43EBD2F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1F46E36D-E3F4-4C04-A1EF-F840B43EBD2F}.Debug|x86.Build.0 = Debug|Any CPU
+		{1F46E36D-E3F4-4C04-A1EF-F840B43EBD2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F46E36D-E3F4-4C04-A1EF-F840B43EBD2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F46E36D-E3F4-4C04-A1EF-F840B43EBD2F}.Release|x86.ActiveCfg = Release|Any CPU
+		{1F46E36D-E3F4-4C04-A1EF-F840B43EBD2F}.Release|x86.Build.0 = Release|Any CPU
+		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}.Debug|x86.Build.0 = Debug|Any CPU
+		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}.Release|x86.ActiveCfg = Release|Any CPU
+		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{18BF0C28-E729-4662-9E61-3BF76237282B} = {CC43AD4D-6FE9-4F04-877D-3B72B4E000E2}
-		{2FB4E5A3-6ACD-4F64-A01E-D00E75F60FDB} = {A65E0161-1D08-49C6-9C1B-9E6188AF8C13}
-		{236F82D0-462D-4424-A5D8-EC2F1B9DD61B} = {CC43AD4D-6FE9-4F04-877D-3B72B4E000E2}
-		{2D94D2B5-3BE8-4A09-992B-F8CB7F92164D} = {CC43AD4D-6FE9-4F04-877D-3B72B4E000E2}
-		{C64822FF-70B5-422D-9E49-9EC4CBA24B00} = {CC43AD4D-6FE9-4F04-877D-3B72B4E000E2}
+		{18BF0C28-E729-4662-9E61-3BF76237282B} = {1D6231C6-F8D6-436A-83E1-F40903B33D65}
+		{2FB4E5A3-6ACD-4F64-A01E-D00E75F60FDB} = {1D6231C6-F8D6-436A-83E1-F40903B33D65}
+		{236F82D0-462D-4424-A5D8-EC2F1B9DD61B} = {1D6231C6-F8D6-436A-83E1-F40903B33D65}
+		{2D94D2B5-3BE8-4A09-992B-F8CB7F92164D} = {1D6231C6-F8D6-436A-83E1-F40903B33D65}
+		{C64822FF-70B5-422D-9E49-9EC4CBA24B00} = {1D6231C6-F8D6-436A-83E1-F40903B33D65}
+		{4DBD42D5-A0EA-44B1-B014-701B53781916} = {F1CCA639-DD6A-4F6B-A93B-22CF2697B96F}
+		{2B67F6ED-293A-4E61-9813-3778F28F7AFC} = {F1CCA639-DD6A-4F6B-A93B-22CF2697B96F}
+		{8702E965-4C7A-43A5-A333-01E66AC8F370} = {FA6A6F07-09CC-4754-8A12-B1B935F5AE98}
+		{1F46E36D-E3F4-4C04-A1EF-F840B43EBD2F} = {FA6A6F07-09CC-4754-8A12-B1B935F5AE98}
+		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE} = {FA6A6F07-09CC-4754-8A12-B1B935F5AE98}
 	EndGlobalSection
 EndGlobal

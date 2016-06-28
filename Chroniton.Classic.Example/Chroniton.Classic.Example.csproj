@@ -67,9 +67,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Chroniton\Chroniton.csproj">
+    <ProjectReference Include="..\Chroniton.Classic\Chroniton.Classic.csproj">
       <Project>{18bf0c28-e729-4662-9e61-3bf76237282b}</Project>
-      <Name>Chroniton</Name>
+      <Name>Chroniton.Classic</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -9,6 +9,7 @@ A library for running tasks(jobs) on schedules. It supports:
 * Limiting the number of threads on which work is done
 * Managing behaviors of jobs which run beyond their next scheduled time
 * Dependency Injection initialization
+* .NET Core
 
 ## Code Example
 ```C#
@@ -62,9 +63,17 @@ leosperry@outlook.com
 
 Licensed under the MIT License
 
+## Changes
+
+Simplified Singularity by removing one of the main loops.
+Added .NET Core support
+
 ## Future Features
 
 * Serialization
 * More Built in Schedule types
-* 
+* XUnit
 
+## Notes
+
+Unfortunately, .NET Core projects do not yet support referencing Shared Code projects. Therefore, the .NET Core projects in this solution reference all the files in the shared projects directly.

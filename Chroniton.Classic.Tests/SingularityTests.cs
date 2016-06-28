@@ -107,7 +107,6 @@ namespace Chroniton.Tests
                         UnderTest.ScheduleJob(MockSchedule.Object, MockJob.Object, true);
                         UnderTest.Start();
                         Assert.True(successManualReset.WaitOne(1000));
-                        successManualReset.Reset();
                     }
 
                     [Test]
@@ -116,7 +115,6 @@ namespace Chroniton.Tests
                         UnderTest.ScheduleParameterizedJob(MockSchedule.Object, MockParamJob.Object, "hello", true);
                         UnderTest.Start();
                         Assert.True(successManualReset.WaitOne(5000));
-                        successManualReset.Reset();
                     }
                 }
 
@@ -135,8 +133,6 @@ namespace Chroniton.Tests
                         UnderTest.Start();
                         Assert.False(successManualReset.WaitOne(200));
                         Assert.True(successManualReset.WaitOne(5000));
-
-                        successManualReset.Reset();
                     }
 
                     [Test]
@@ -146,8 +142,6 @@ namespace Chroniton.Tests
                         UnderTest.Start();
                         Assert.False(successManualReset.WaitOne(200));
                         Assert.True(successManualReset.WaitOne(5000));
-
-                        successManualReset.Reset();
                     }
                 }
 
@@ -161,8 +155,6 @@ namespace Chroniton.Tests
                         UnderTest.Start();
                         Assert.False(successManualReset.WaitOne(200));
                         Assert.True(successManualReset.WaitOne(5000));
-
-                        successManualReset.Reset();
                     }
 
                     [Test]
@@ -174,8 +166,6 @@ namespace Chroniton.Tests
                         UnderTest.Start();
                         Assert.False(successManualReset.WaitOne(200));
                         Assert.True(successManualReset.WaitOne(5000));
-
-                        successManualReset.Reset();
                     }
                 }
             }

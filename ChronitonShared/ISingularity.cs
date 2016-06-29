@@ -38,7 +38,7 @@ namespace Chroniton
         int MaximumThreads { get; set; }
 
         /// <summary>
-        /// The amount of time to wait each time through the 2 main loops. Default is 5.
+        /// The amount of time to wait each time through the main loop. Default is 5.
         /// If set to zero, each loop will wait 1/10th of a second.
         /// </summary>
         int MillisecondWait { get; set; }

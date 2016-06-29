@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TheCollective;
@@ -10,12 +8,9 @@ namespace Chroniton
     public class Singularity : ISingularity
     {
         MinHeap<ScheduledJob> _scheduledQueue = new MinHeap<ScheduledJob>();
-        ConcurrentQueue<ScheduledJob> _jobQueue = new ConcurrentQueue<ScheduledJob>();
-        ConcurrentQueue<Task> _doneTasks = new ConcurrentQueue<Task>();
         ConcurrentHashSet<Task> _tasks = new ConcurrentHashSet<Task>();
 
         Thread _schedulingThread = null;
-        Thread _jobWatcherThread = null;
         object _startStopLoc = new { };
         bool _started = false;
 
@@ -128,9 +123,6 @@ namespace Chroniton
 
                         _schedulingThread = new Thread(this.run);
                         _schedulingThread.Start();
-
-                        _jobWatcherThread = new Thread(this.jobWatcher);
-                        _jobWatcherThread.Start();
                     }
                 }
             }
@@ -146,14 +138,7 @@ namespace Chroniton
             {
                 _started = false;
                 _schedulingThread.Join();
-                _jobWatcherThread.Join();
-
-                ScheduledJob queuedJob;
-                Task donejob;
-
                 while (_scheduledQueue.Count > 0) { _scheduledQueue.Extract(); }
-                while (_jobQueue.TryDequeue(out queuedJob)) { }
-                while (_doneTasks.TryDequeue(out donejob)) { }
             }
         }
 
@@ -168,11 +153,13 @@ namespace Chroniton
                 var scheduledJob = _scheduledQueue.Peek();
                 if (scheduledJob != null && scheduledJob.NextRun < DateTime.UtcNow)
                 {
-                    //we need to fire the next job
-                    //another scheduled job could've been added in the mirosecond to reach the 
-                    //next line. So, we need to extract (which will be thread safe) the 
+                    SpinWait.SpinUntil(() => _tasks.Count < this.MaximumThreads);
+                    //we know we need to fire the next job
+                    //another higher priority scheduled job could've been added while waiting
+                    //So, we need to extract (which will be thread safe) the 
                     //next item from the queue
-                    _jobQueue.Enqueue(_scheduledQueue.Extract());
+
+                    runJob(_scheduledQueue.Extract());
                 }
                 wait();
             }//something said stop
@@ -193,44 +180,6 @@ namespace Chroniton
 
             DateTime waitUntil = DateTime.UtcNow.AddTicks(ticks);
             SpinWait.SpinUntil(() => DateTime.UtcNow > waitUntil);
-        }
-
-        /// <summary>
-        /// thread for executing jobs
-        /// </summary>
-        private void jobWatcher()
-        {
-            Task done;
-            while (_started)
-            {
-                while (_doneTasks.TryDequeue(out done))
-                {
-                    _tasks.Remove(done);
-                }
-
-                ScheduledJob job;
-                if (_jobQueue.TryDequeue(out job) && !job.PreventReschedule)
-                {
-                    SpinWait.SpinUntil(() => _tasks.Count - _doneTasks.Count < this.MaximumThreads);
-                    if (!job.PreventReschedule)
-                    {
-                        runJob(job);
-                    }
-                }
-                wait();
-            }
-            SpinWait.SpinUntil(() => _tasks.Count - _doneTasks.Count < this.MaximumThreads);
-            try
-            {
-                Task.WaitAll(_tasks.ToArray());
-            }
-            catch (Exception)
-            {
-            }
-            while (_doneTasks.TryDequeue(out done))
-            {
-                _tasks.Remove(done);
-            }
         }
 
         private void runJob(ScheduledJob job)
@@ -254,7 +203,8 @@ namespace Chroniton
                 Task.Run(() => _onJobError?.Invoke(new ScheduledJobEventArgs(job),
                     t.Exception is AggregateException? t.Exception.InnerException : t.Exception));
             }
-            _doneTasks.Enqueue(t);
+            _tasks.Remove(t);
+
             setNextExecution(job);
         }
 

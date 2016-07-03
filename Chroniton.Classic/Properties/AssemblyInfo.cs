@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Chroniton")]
 [assembly: AssemblyDescription("A library for running tasks on schedules.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Leonard Sperry")]
 [assembly: AssemblyProduct("Chroniton")]
 [assembly: AssemblyCopyright("Copyright © Leonard Sperry 2016")]
 [assembly: AssemblyTrademark("")]

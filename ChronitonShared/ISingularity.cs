@@ -43,6 +43,9 @@ namespace Chroniton
         /// </summary>
         int MillisecondWait { get; set; }
 
+        /// <summary>
+        /// returns true if the Singularity is currently scheduling/executing jobs
+        /// </summary>
         bool IsStarted { get; }
 
         /// <summary>
@@ -94,10 +97,11 @@ namespace Chroniton
         IScheduledJob ScheduleParameterizedJob<T>(ISchedule schedule, IParameterizedJob<T> job, T parameter, DateTime firstRun);
 
         /// <summary>
-        /// Stops the job from executing again
+        /// Stops the job from executing again.
         /// </summary>
         /// <param name="scheduledJob">The job to stop</param>
-        /// <returns>true if found and removed</returns>
+        /// <returns>true if found and removed. false if currently executing or not found.
+        /// Either way, the job will not run again on the associated schedule</returns>
         bool StopScheduledJob(IScheduledJob scheduledJob);
 
         /// <summary>

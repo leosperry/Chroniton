@@ -184,7 +184,7 @@ namespace Chroniton
 
         private void runJob(ScheduledJob job)
         {
-            if (_started)
+            if (_started && !job.PreventReschedule)
             {
                 var task = Task.Run(job.JobTask);
                 _tasks.Add(task);
@@ -236,13 +236,13 @@ namespace Chroniton
                         if (next < now)
                         {
                             _onScheduleError?.Invoke(new ScheduledJobEventArgs(job), 
-                                new Exception("dude quit and figure your schedule out"));
+                                new Exception("The schedule twice returned a time before the end of the previous execution. "));
                             return;
                         }
                         break;
                     case ScheduleMissedBehavior.ThrowException:
                         _onScheduleError?.Invoke(new ScheduledJobEventArgs(job),
-                            new Exception("dude quit and figure your schedule out"));
+                            new Exception("The schedule returned a time before the end of the previous execution"));
                         return;
                 }
             }

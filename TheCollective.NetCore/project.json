@@ -1,6 +1,15 @@
 ﻿{
   "version": "1.0.0-*",
 
+  "buildOptions": {
+    "compile": {
+      "include": [
+        "../TheCollectiveShared/ConcurrentBinaryHeap.cs",
+        "../TheCollectiveShared/ConcurrentHashSet.cs"
+      ]
+    }
+  },
+
   "dependencies": {
     "NETStandard.Library": "1.5.0-rc2-24027"
   },

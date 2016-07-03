@@ -10,7 +10,7 @@ namespace Chroniton
         MinHeap<ScheduledJob> _scheduledQueue = new MinHeap<ScheduledJob>();
         ConcurrentHashSet<Task> _tasks = new ConcurrentHashSet<Task>();
 
-        Thread _schedulingThread = null;
+        Task _schedulingThread = null;
         object _startStopLoc = new { };
         bool _started = false;
 
@@ -121,14 +121,9 @@ namespace Chroniton
                     {
                         _started = true;
 
-                        _schedulingThread = new Thread(this.run);
-                        _schedulingThread.Start();
+                        _schedulingThread = Task.Run(new Action(this.run));
                     }
                 }
-            }
-            else
-            {
-                // log or whatever that we're already started
             }
         }
 
@@ -137,7 +132,7 @@ namespace Chroniton
             if (_started)
             {
                 _started = false;
-                _schedulingThread.Join();
+                Task.WaitAll(_schedulingThread);
                 while (_scheduledQueue.Count > 0) { _scheduledQueue.Extract(); }
             }
         }

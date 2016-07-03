@@ -12,6 +12,8 @@ A library for running tasks(jobs) on schedules. It supports:
 * Managing behaviors of jobs which run beyond their next scheduled time
 * Dependency Injection initialization
 * .NET Core
+ 
+See [Wiki](https://github.com/leosperry/Chroniton/wiki) and [Tutorial](https://github.com/leosperry/Chroniton/wiki/Tutorial) for more info
 
 ## Code Example
 ```C#

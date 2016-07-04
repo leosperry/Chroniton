@@ -5,9 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+[assembly: AssemblyTitle("Chroniton.NetCore")]
+[assembly: AssemblyDescription("A library for running tasks on schedules.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Leonard Sperry")]
 [assembly: AssemblyProduct("Chroniton.NetCore")]
+[assembly: AssemblyCopyright("Copyright © Leonard Sperry 2016")]
+
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible

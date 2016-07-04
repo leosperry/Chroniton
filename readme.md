@@ -56,7 +56,8 @@ This project was inspired for the need to have a strongly typed .NET solution fo
 
 ## Installation
 
-nuget instructions will go here
+in your nuget package manager
+`Install-Package Chroniton`
 
 ## Contributors
 

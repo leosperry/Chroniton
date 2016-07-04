@@ -13,6 +13,6 @@
     <description>$description$</description>
     <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
     <copyright>Copyright 2016</copyright>
-    <tags> "Chroniton scheduling scheduler task tasks job jobs background worker trigger recurring trigger</tags>
+    <tags>Chroniton scheduling scheduler task tasks job jobs background worker trigger recurring trigger</tags>
   </metadata>
 </package>

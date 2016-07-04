@@ -1,5 +1,5 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/8n8pllu27cihbsx8/branch/master?svg=true)](https://ci.appveyor.com/project/leosperry/chroniton/branch/master)
-+[![NuGet](https://img.shields.io/nuget/v/Chroniton.svg)](https://www.nuget.org/packages/Chroniton/) 
+[![NuGet](https://img.shields.io/nuget/v/Chroniton.svg)](https://www.nuget.org/packages/Chroniton/) 
 
 ## Synopsis
 

@@ -57,8 +57,13 @@ This project was inspired for the need to have a strongly typed .NET solution fo
 
 ## Installation
 
-in your nuget package manager
+in your nuget package manager:
+
 `Install-Package Chroniton`
+
+for the .NETCore version use this command:
+
+`Install-Package Chroniton.NetCore`
 
 ## Contributors
 

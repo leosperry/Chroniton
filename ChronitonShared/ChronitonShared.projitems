@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ScheduledJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScheduleMissedBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedules\ConstantSchedule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Schedules\CronSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedules\EveryXTimeSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedules\SimpleSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Singularity.cs" />

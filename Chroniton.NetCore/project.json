@@ -17,6 +17,7 @@
   "buildOptions": {
     "compile": {
       "include": [
+        "../ChronitonShared/Constants.cs",
         "../ChronitonShared/IJob.cs",
         "../ChronitonShared/ISchedule.cs",
         "../ChronitonShared/ISingularity.cs",
@@ -27,6 +28,7 @@
         "../ChronitonShared/Jobs/SimpleJob.cs",
         "../ChronitonShared/Schedules/ConstantSchedule.cs",
         "../ChronitonShared/Schedules/EveryXTimeSchedule.cs",
+        "../ChronitonShared/Schedules/RunOnceSchedule.cs",
         "../ChronitonShared/Schedules/SimpleSchedule.cs"
       ]
     }

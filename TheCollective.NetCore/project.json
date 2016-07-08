@@ -1,5 +1,6 @@
 ﻿{
   "version": "1.0.1",
+  "projectUrl": "https://github.com/leosperry/Chroniton",
   "packOptions": {
     "owners": [ "Leonard Sperry" ],
     "repository": {
@@ -7,7 +8,7 @@
       "url": "https://github.com/leosperry/Chroniton"
     },
     "licenseUrl": "https://raw.githubusercontent.com/leosperry/Chroniton/master/LICENSE",
-    "tags": ["TheCollective", "collection", "collections", "concurrent", "priorityqueue", "minheap", "maxheap", "hashset" ],
+    "tags": [ "TheCollective", "netcore", "coreclr", "collection", "collections", "concurrent", "priorityqueue", "minheap", "maxheap", "hashset" ],
     "summary": "a library with concurrent collections"
   },
   "authors": [ "Leonard Sperry" ],

@@ -2,6 +2,7 @@
   "copyright": "Copyright © Leonard Sperry 2016",
   "description": "A library for running tasks on schedules.",
   "title": "Chroniton.NetCore",
+  "projectUrl": "https://github.com/leosperry/Chroniton",
   "packOptions": {
     "owners": [ "Leonard Sperry" ],
     "summary": "A library for running tasks(jobs) on schedules.",
@@ -12,7 +13,7 @@
     },
     "tags": [ "Chroniton", "netcore", "coreclr", "scheduling", "scheduler", "task", "tasks", "job", "jobs", "background", "worker", "trigger", "recurring", "trigger" ]
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
 
   "buildOptions": {
     "compile": {

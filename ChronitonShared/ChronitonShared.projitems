@@ -9,6 +9,7 @@
     <Import_RootNamespace>ChronitonShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISingularity.cs" />
@@ -17,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ScheduleMissedBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedules\ConstantSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedules\EveryXTimeSchedule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Schedules\RunOnceSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedules\SimpleSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Singularity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SingularityFactory.cs" />

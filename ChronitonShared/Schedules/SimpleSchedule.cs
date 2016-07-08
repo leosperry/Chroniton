@@ -21,7 +21,7 @@ namespace Chroniton.Schedules
             _getNextSchedule = getNextSchedule;
         }
 
-        public DateTime NextScheduledTime(DateTime afterThisTime)
+        public DateTime NextScheduledTime(IScheduledJob scheduledJob)
         {
             return _getNextSchedule();
         }

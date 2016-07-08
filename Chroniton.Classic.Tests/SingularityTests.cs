@@ -45,7 +45,7 @@ namespace Chroniton.Tests
                 scheduledTimes = new Queue<DateTime>();
 
                 MockSchedule = new Mock<ISchedule>();
-                MockSchedule.Setup(s => s.NextScheduledTime(It.IsAny<DateTime>()))
+                MockSchedule.Setup(s => s.NextScheduledTime(It.IsAny<IScheduledJob>()))
                     .Returns(() => scheduledTimes.Count > 0 ? scheduledTimes.Dequeue() : DateTime.MaxValue);
 
                 successManualReset = new ManualResetEvent(false);
@@ -229,6 +229,29 @@ namespace Chroniton.Tests
             {                     
                 TestSchedule TestSchedule;
 
+                public class WhenNever : SetNextScheduleTests
+                {
+                    [SetUp]
+                    public void InitSchedule()
+                    {
+                        TestSchedule = new TestSchedule()
+                        {
+                            NextSchedule = NextScheduleType.Never
+                        };
+                    }
+
+                    [Test]
+                    public void ShouldNotRun()
+                    {
+                        var job = new SimpleJob((dt) => Task.CompletedTask);
+                        UnderTest.ScheduleJob(TestSchedule, job, true);
+                        UnderTest.Start();
+                        Assert.True(successManualReset.WaitOne());
+                        successManualReset.Reset();
+                        Assert.False(successManualReset.WaitOne(500));
+                    }
+                }
+
                 public class WhenNextAfterPrevious: SetNextScheduleTests
                 {
                     [SetUp]
@@ -316,7 +339,7 @@ namespace Chroniton.Tests
                     public void SetException()
                     {
                         MockSchedule = new Mock<ISchedule>();
-                        MockSchedule.Setup(s => s.NextScheduledTime(It.IsAny<DateTime>()))
+                        MockSchedule.Setup(s => s.NextScheduledTime(It.IsAny<IScheduledJob>()))
                             .Throws(new DivideByZeroException());
 
                         MockJob = new Mock<IJob>();
@@ -397,8 +420,7 @@ namespace Chroniton.Tests
 
     public enum NextScheduleType
     {
-        Now, Earlier, Later, Exception,
-        Skip
+        Now, Earlier, Later, Exception, Skip, Never
     }
 
     public class TestSchedule : ISchedule
@@ -408,10 +430,12 @@ namespace Chroniton.Tests
 
         public NextScheduleType NextSchedule { get; set; } = NextScheduleType.Now;
 
-        public DateTime NextScheduledTime(DateTime afterThisTime)
+        public DateTime NextScheduledTime(IScheduledJob scheduledJob)
         {
             switch (NextSchedule)
             {
+                case NextScheduleType.Never:
+                    return Constants.Never;
                 case NextScheduleType.Now:
                     return DateTime.UtcNow;
                 case NextScheduleType.Earlier:

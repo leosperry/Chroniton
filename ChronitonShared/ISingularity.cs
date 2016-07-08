@@ -23,7 +23,7 @@ namespace Chroniton
         {
             Job = scheduledJob.Job;
             Schedule = scheduledJob.Schedule;
-            ScheduledTime = scheduledJob.NextRun;
+            ScheduledTime = scheduledJob.RunTime;
         }
     }
 

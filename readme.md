@@ -14,7 +14,7 @@ A library for running tasks(jobs) on schedules. It supports:
 * Dependency Injection initialization
 * .NET Core
  
-See [Wiki](https://github.com/leosperry/Chroniton/wiki) and [Tutorial](https://github.com/leosperry/Chroniton/wiki/Tutorial) for more info
+See [Wiki](https://github.com/leosperry/Chroniton/wiki) and [Tutorial](https://github.com/leosperry/Chroniton/wiki/Tutorial) for more info. Official site [here](http://chroniton.net/).
 
 ## Code Example
 ```C#

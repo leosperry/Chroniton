@@ -409,6 +409,17 @@ namespace Chroniton.Schedules.Cron
         class DayOfMonthField : DateField 
         {
             string _dayOfWeek, _dayOfMonth;
+            static readonly string[][] conversions = new string[][]
+            {
+                new string[] { "SUN", "0" },
+                new string[] { "MON", "1" },
+                new string[] { "TUE", "2" },
+                new string[] { "WED", "3" },
+                new string[] { "THU", "4" },
+                new string[] { "THUR", "4" },
+                new string[] { "FRI", "5" },
+                new string[] { "SAT", "6" }
+            };
 
             protected override DatePart DatePart
             {
@@ -421,6 +432,10 @@ namespace Chroniton.Schedules.Cron
             public DayOfMonthField(string dayOfWeek, string dayOfMonth)
             {
                 _dayOfWeek = dayOfWeek.Replace('?', '*');
+                foreach (var item in conversions)
+                {
+                    _dayOfWeek.Replace(item[0], item[1]);
+                }
                 _dayOfMonth = dayOfMonth.Replace('?', '*');
                 if (_dayOfWeek != "*" && _dayOfMonth != "*")
                 {
@@ -475,7 +490,53 @@ namespace Chroniton.Schedules.Cron
 
             private IEnumerable<int> getAvailableFromDayOfWeek(DateTime date)
             {
-                throw new NotImplementedException();
+                foreach (var item in _dayOfWeek.Split(','))
+                {
+                    if (item.EndsWith("L"))
+                    {
+                        var day = (DayOfWeek)int.Parse(item.Substring(0, 1));
+                        yield return getLastDayOfWeekOfMonth(day, date);
+                    }
+                    else if (item.Contains('#'))
+                    {
+                        var values = item.Split('#');
+                        int dayOfWeek = int.Parse(values[0]), number = int.Parse(values[1]);
+                        yield return getNDayOfWeekFromMonth((DayOfWeek)dayOfWeek, number, date);
+                    }
+                    else if (item.Contains('-'))
+                    {
+                        var range = item.Split('-');
+                        int start = int.Parse(range[0]), end = int.Parse(range[1]);
+                        for (int i = start; i <= end; i++)
+                        {
+                            yield return i;
+                        }
+                    }
+                    else
+                    {
+                        yield return int.Parse(item);
+                    }
+                }
+            }
+
+            private int getNDayOfWeekFromMonth(DayOfWeek dayOfWeek, int number, DateTime date)
+            {
+                var currentDate = date.AddDays(- date.Day + 1);
+                while (currentDate.DayOfWeek != dayOfWeek)
+                {
+                    currentDate = currentDate.AddDays(1);
+                }
+                return 7 * (number - 1) + currentDate.Day;
+            }
+
+            private int getLastDayOfWeekOfMonth(DayOfWeek day, DateTime date)
+            {
+                var lastDay = getLastDayOfMonth(date);
+                while (lastDay.DayOfWeek != day)
+                {
+                    date = date.AddDays(-1);
+                }
+                return date.Day;
             }
 
             private IEnumerable<int> getAvailableFromDayOfMonth(DateTime date)

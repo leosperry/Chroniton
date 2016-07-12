@@ -29,12 +29,16 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TheCollective.NetCore", "Th
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Chroniton.NetCore.Example", "Chroniton.NetCore.Example\Chroniton.NetCore.Example.xproj", "{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chroniton.Tests", "Chroniton.Tests\Chroniton.Tests.csproj", "{E639CBE8-70A7-41AD-8ADF-8524765AD9F1}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		ChronitonShared\ChronitonShared.projitems*{18bf0c28-e729-4662-9e61-3bf76237282b}*SharedItemsImports = 4
 		TheCollectiveShared\TheCollectiveShared.projitems*{236f82d0-462d-4424-a5d8-ec2f1b9dd61b}*SharedItemsImports = 4
 		TheCollectiveShared\TheCollectiveShared.projitems*{2b67f6ed-293a-4e61-9813-3778f28f7afc}*SharedItemsImports = 13
 		ChronitonShared\ChronitonShared.projitems*{4dbd42d5-a0ea-44b1-b014-701b53781916}*SharedItemsImports = 13
+		ChronitonShared\ChronitonShared.projitems*{e639cbe8-70a7-41ad-8adf-8524765ad9f1}*SharedItemsImports = 4
+		TheCollectiveShared\TheCollectiveShared.projitems*{e639cbe8-70a7-41ad-8adf-8524765ad9f1}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +111,14 @@ Global
 		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}.Release|x86.ActiveCfg = Release|Any CPU
 		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE}.Release|x86.Build.0 = Release|Any CPU
+		{E639CBE8-70A7-41AD-8ADF-8524765AD9F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E639CBE8-70A7-41AD-8ADF-8524765AD9F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E639CBE8-70A7-41AD-8ADF-8524765AD9F1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E639CBE8-70A7-41AD-8ADF-8524765AD9F1}.Debug|x86.Build.0 = Debug|Any CPU
+		{E639CBE8-70A7-41AD-8ADF-8524765AD9F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E639CBE8-70A7-41AD-8ADF-8524765AD9F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E639CBE8-70A7-41AD-8ADF-8524765AD9F1}.Release|x86.ActiveCfg = Release|Any CPU
+		{E639CBE8-70A7-41AD-8ADF-8524765AD9F1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,5 +134,6 @@ Global
 		{8702E965-4C7A-43A5-A333-01E66AC8F370} = {FA6A6F07-09CC-4754-8A12-B1B935F5AE98}
 		{1F46E36D-E3F4-4C04-A1EF-F840B43EBD2F} = {FA6A6F07-09CC-4754-8A12-B1B935F5AE98}
 		{ADA15C53-4F97-4BB0-9940-F5108CF41ACE} = {FA6A6F07-09CC-4754-8A12-B1B935F5AE98}
+		{E639CBE8-70A7-41AD-8ADF-8524765AD9F1} = {1D6231C6-F8D6-436A-83E1-F40903B33D65}
 	EndGlobalSection
 EndGlobal

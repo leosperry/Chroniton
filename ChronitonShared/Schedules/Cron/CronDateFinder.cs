@@ -26,12 +26,12 @@ namespace Chroniton.Schedules.Cron
             // 0 Second
 
             var fields = new DateField[] {
-                new YearField(this.Year),
-                new MonthField(this.Month),
-                new DayOfMonthField(this.DayOfWeek, this.DayOfMonth),
-                new HoursField(this.Hours),
+                new SecondsField(this.Seconds),
                 new MinutesField(this.Minutes),
-                new SecondsField(this.Seconds)
+                new HoursField(this.Hours),
+                new DayOfMonthField(this.DayOfWeek, this.DayOfMonth),
+                new MonthField(this.Month),
+                new YearField(this.Year)
             };
 
             //Foreach column
@@ -71,7 +71,7 @@ namespace Chroniton.Schedules.Cron
         {
             Year,
             Month,
-            Date,
+            Day,
             Hour,
             Minute,
             Second
@@ -86,6 +86,7 @@ namespace Chroniton.Schedules.Cron
             protected abstract DatePart DatePart { get; }
 
             public abstract DateTime GetNext(DateTime input);
+
             public abstract DateTime GetNearestToCurrent(DateTime date);
             
             protected static IEnumerable<int> parseCommaHyphenedInts(string input)
@@ -159,21 +160,22 @@ namespace Chroniton.Schedules.Cron
 
             protected DateTime addTime(DateTime date, int amount)
             {
+                DateTime newDate;
                 switch (this.DatePart)
                 {
                     case DatePart.Year:
                         return date.AddYears(amount);
                     case DatePart.Month:
-                        return date.AddMonths(amount);
-                    case DatePart.Date:
-                        return date.AddDays(amount);
+                        return (newDate = date.AddMonths(amount)).Year == date.Year ? newDate : date;
+                    case DatePart.Day:
+                        return (newDate = date.AddDays(amount)).Month == date.Month ? newDate : date;
                     case DatePart.Hour:
-                        return date.AddHours(amount);
+                        return (newDate = date.AddHours(amount)).Day == date.Day ? newDate : date;
                     case DatePart.Minute:
-                        return date.AddMinutes(amount);
+                        return (newDate = date.AddMinutes(amount)).Hour == date.Hour ? newDate : date;
                     default:
                     case DatePart.Second:
-                        return date.AddSeconds(amount);
+                        return (newDate = date.AddSeconds(amount)).Minute == date.Minute ? newDate : date;
                 }
             }
 
@@ -186,7 +188,7 @@ namespace Chroniton.Schedules.Cron
                         return date.Year;
                     case DatePart.Month:
                         return date.Month;
-                    case DatePart.Date:
+                    case DatePart.Day:
                         return date.Day;
                     case DatePart.Hour:
                         return date.Hour;
@@ -223,8 +225,8 @@ namespace Chroniton.Schedules.Cron
                 else
                 {
                     var partValue = getPartFromDate(date);
-                    var year = getNearestInt(partValue, availableValues);
-                    return addTime(date, year - partValue);
+                    var newValue = getNearestInt(partValue, availableValues);
+                    return addTime(date, newValue - partValue);
                 }
             }
 
@@ -232,14 +234,14 @@ namespace Chroniton.Schedules.Cron
             {
                 if (availableValues == null)
                 {
-                    return input.AddYears(1);
+                    return addTime(input, 1);
                 }
                 else
                 {
-                    var next = base.getNextInt(input.Year, availableValues);
+                    var partValue = getPartFromDate(input);
+                    var next = base.getNextInt(partValue, availableValues);
                     if (next.HasValue)
                     {
-                        var partValue = base.getPartFromDate(input);
                         return base.addTime(input, next.Value - partValue);
                     }
                     else
@@ -425,7 +427,7 @@ namespace Chroniton.Schedules.Cron
             {
                 get
                 {
-                    return DatePart.Date;
+                    return DatePart.Day;
                 }
             }
 
@@ -434,7 +436,7 @@ namespace Chroniton.Schedules.Cron
                 _dayOfWeek = dayOfWeek.Replace('?', '*');
                 foreach (var item in conversions)
                 {
-                    _dayOfWeek.Replace(item[0], item[1]);
+                    _dayOfWeek = _dayOfWeek.Replace(item[0], item[1]);
                 }
                 _dayOfMonth = dayOfMonth.Replace('?', '*');
                 if (_dayOfWeek != "*" && _dayOfMonth != "*")
@@ -450,37 +452,94 @@ namespace Chroniton.Schedules.Cron
                 {
                     return date;
                 }
+                else if (_dayOfMonth == "L")
+                {
+                    return getLastDayOfMonth(date);
+                }
+                else if (_dayOfMonth.EndsWith("W"))
+                {
+                    var d = int.Parse(_dayOfMonth.Substring(0, _dayOfMonth.Length - 2));
+                    return getNearestWeekday(d, date);
+                }
 
-
-                return retval;
+                IEnumerable<int> availableValues;
+                if (_dayOfMonth != "*")
+                {
+                    availableValues = parseCommaHyphenedInts(_dayOfMonth);
+                }
+                else
+                {
+                    availableValues = getAvailableFromDayOfWeek(date);
+                }
+                
+                var newday = getNearestInt(date.Day, availableValues);
+                return addTime(date, newday - date.Day);
             }
-
 
             public override DateTime GetNext(DateTime input)
             {
                 if (_dayOfMonth == "*" && _dayOfWeek == "*")
                 {
-                    return input.AddDays(1);
+                    var lastDay = getLastDayOfMonth(input);
+                    var nextDay = input.AddDays(1);
+                    return nextDay > lastDay ? lastDay : nextDay;
+                }
+                else if (_dayOfMonth == "L")
+                {
+                    return getLastDayOfMonth(input);
+                }
+                else if (_dayOfMonth.EndsWith("W"))
+                {
+                    var d = int.Parse(_dayOfMonth.Substring(0, _dayOfMonth.Length - 2));
+                    return getNearestWeekday(d, input);
                 }
 
-                throw new NotImplementedException();
-            }
-
-            IEnumerable<int> getAvailable(DateTime date)
-            {
-                if (_dayOfMonth == "L")
+                IEnumerable<int> availableValues;
+                if (_dayOfMonth != "*")
                 {
-                    return Enumerable.Repeat(getLastDayOfMonth(date).Day, 1);
-                }
-                else if (_dayOfMonth != "*")
-                {
-                    return getAvailableFromDayOfMonth(date);
+                    availableValues = parseCommaHyphenedInts(_dayOfMonth);
                 }
                 else
                 {
-                    return getAvailableFromDayOfWeek(date);
+                    availableValues = getAvailableFromDayOfWeek(input);
                 }
 
+                var newday = getNextInt(input.Day, availableValues);
+                if (newday == null)
+                {
+                    return input;
+                }
+                else
+                {
+                    return addTime(input, newday.Value - input.Day);
+                }
+            }
+
+            private DateTime getNearestWeekday(int day, DateTime date)
+            {
+                var newdate = addTime(date, day - date.Day);
+                if (newdate.DayOfWeek > System.DayOfWeek.Saturday && newdate.DayOfWeek < System.DayOfWeek.Sunday)
+                {
+                    return date;
+                }
+                else if (newdate.Day == 1 && newdate.DayOfWeek == System.DayOfWeek.Saturday)
+                {
+                    //must grab next Monday
+                    return newdate.AddDays(2);
+                }
+                else if (newdate.Day == getLastDayOfMonth(date).Day && newdate.DayOfWeek == System.DayOfWeek.Sunday)
+                {
+                    //must grab previous Friday
+                    return newdate.AddDays(-2);
+                }
+                else if(newdate.DayOfWeek == System.DayOfWeek.Saturday)
+                {
+                    return newdate.AddDays(-1);
+                }
+                else
+                {
+                    return newdate.AddDays(1);
+                }
             }
 
             private static DateTime getLastDayOfMonth(DateTime date)
@@ -509,14 +568,25 @@ namespace Chroniton.Schedules.Cron
                         int start = int.Parse(range[0]), end = int.Parse(range[1]);
                         for (int i = start; i <= end; i++)
                         {
-                            yield return i;
+                            foreach (var day in getDaysFromWeekDay((DayOfWeek)i))
+                            {
+                                yield return day;
+                            }
                         }
                     }
                     else
                     {
-                        yield return int.Parse(item);
+                        foreach (var day in getDaysFromWeekDay((DayOfWeek)int.Parse(item)))
+                        {
+                            yield return day;
+                        }
                     }
                 }
+            }
+
+            private IEnumerable<int> getDaysFromWeekDay(DayOfWeek i)
+            {
+                throw new NotImplementedException();
             }
 
             private int getNDayOfWeekFromMonth(DayOfWeek dayOfWeek, int number, DateTime date)
@@ -537,11 +607,6 @@ namespace Chroniton.Schedules.Cron
                     date = date.AddDays(-1);
                 }
                 return date.Day;
-            }
-
-            private IEnumerable<int> getAvailableFromDayOfMonth(DateTime date)
-            {
-                throw new NotImplementedException();
             }
         }
     }

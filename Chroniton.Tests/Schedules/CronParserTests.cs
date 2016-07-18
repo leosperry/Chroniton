@@ -52,6 +52,29 @@ namespace Chroniton.Tests.Schedules
                 Assert.Equal("SUN", result.DayOfWeek);
                 Assert.Equal("2000", result.Year);
             }
+
+            public class GetNextTests : ParseTests
+            {
+                [Theory
+                    , InlineData("0 0 0 ? * SUN#2 *", "1/31/1998 00:00:00", "2/8/1998 00:00:00")
+                    , InlineData("0 0 0 ? * SUN *", "1/1/1998 00:00:00", "2/1/1998 00:00:01")
+                    , InlineData("0 0 0 1 JAN ? *", "1/1/2000 00:00:00", "1/1/2001 00:00:00")
+                    , InlineData("0 0 0 1 JAN ? 2000", "1/1/2000 00:00:00", null)]
+                public void ShouldReturnCorrectly(string input, string startDate, string expectedDate)
+                {
+                    initParser();
+                    var finder = parserUnderTest.Parse(input);
+                    var next = finder.GetNext(DateTime.Parse(startDate));
+                    if (expectedDate == null)
+                    {
+                        Assert.Null(next);
+                    }
+                    else
+                    {
+                        Assert.Equal(DateTime.Parse(expectedDate), next);
+                    }
+                }
+            }
         }
     }
 }

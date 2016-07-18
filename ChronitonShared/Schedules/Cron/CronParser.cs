@@ -11,7 +11,6 @@ namespace Chroniton.Schedules.Cron
         const string secondsMinutesPattern = @"([0-5]?[0-9])";
         const string hoursPattern = @"([01]?[0-9]|2[0-3])";
         const string dayOfMonthPattern = @"(0?[1-9]|[12][0-9]|3[01])";
-        const string optDayOfMonth = @"(W?)|";
         const string monthPattern = @"(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC|(0?[0-9]|1[0-2]))";
         const string dayOfWeekPattern = @"(SUN|MON|TUE|WED|THUR?|FRI|SAT|[0-6])";
         const string optDayOfWeek = @"((L|#[1-5])?)|";
@@ -27,7 +26,7 @@ namespace Chroniton.Schedules.Cron
                 new string[] { secondsMinutesPattern, string.Empty, string.Empty, @"(/([2-6]|1[025]|[23]0))?" },
                 new string[] { secondsMinutesPattern, string.Empty, string.Empty ,@"(/([2-6]|1[025]|[23]0))?"},
                 new string[] { hoursPattern, string.Empty, string.Empty, @"(/([23468]|12))?"},
-                new string[] { dayOfMonthPattern, optDayOfMonth, @"|L|\?", string.Empty },
+                new string[] { dayOfMonthPattern, string.Empty, $@"|({dayOfMonthPattern}W)|L|\?", string.Empty },
                 new string[] { monthPattern, string.Empty, string.Empty, string.Empty },
                 new string[] { dayOfWeekPattern, optDayOfWeek, @"|\?", string.Empty },
                 new string[] { yearPattern, string.Empty, string.Empty, string.Empty },
@@ -59,9 +58,9 @@ namespace Chroniton.Schedules.Cron
                 Minutes = m.Groups[14].Value,
                 Hours = m.Groups[27].Value,
                 DayOfMonth = m.Groups[40].Value,
-                Month = m.Groups[52].Value,
-                DayOfWeek = m.Groups[67].Value,
-                Year = m.Groups[80].Value
+                Month = m.Groups[53].Value,
+                DayOfWeek = m.Groups[68].Value,
+                Year = m.Groups[81].Value
             };
         }
     }

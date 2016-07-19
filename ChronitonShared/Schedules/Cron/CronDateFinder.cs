@@ -17,14 +17,6 @@ namespace Chroniton.Schedules.Cron
 
         public DateTime? GetNext(DateTime input)
         {
-            //field order
-            // 5 Year
-            // 4 Month 
-            // 3 Date (calculated from 2 fields)
-            // 2 Hour
-            // 1 Minute
-            // 0 Second
-
             var fields = new DateField[] {
                 new SecondsField(this.Seconds),
                 new MinutesField(this.Minutes),
@@ -34,7 +26,6 @@ namespace Chroniton.Schedules.Cron
                 new YearField(this.Year)
             };
 
-            //Foreach column
             int currentColumn = 5;
             DateTime retVal = new DateTime(
                 input.Year, input.Month, input.Day, 
@@ -85,6 +76,8 @@ namespace Chroniton.Schedules.Cron
         {
             protected abstract DatePart DatePart { get; }
 
+            protected abstract int SmallestValueForPart { get; }
+
             public abstract DateTime GetNext(DateTime input);
 
             public abstract DateTime GetNearestToCurrent(DateTime date);
@@ -123,25 +116,19 @@ namespace Chroniton.Schedules.Cron
                     {
                         return i;
                     }
-                    else
+                    else if (i < nextBiggest && i > target)
                     {
-                        if (i > nextSmallest && i < target)
-                        {
-                            nextSmallest = i;
-                        }
-                        else if (i < nextBiggest && i > target)
-                        {
-                            nextBiggest = i;
-                        }
+                        nextBiggest = i;
                     }
                 }
+                
                 if (nextBiggest != int.MaxValue)
                 {
                     return nextBiggest;
                 }
                 else
                 {
-                    return nextSmallest;
+                    return SmallestValueForPart;
                 }
             }
 
@@ -262,6 +249,8 @@ namespace Chroniton.Schedules.Cron
                 }
             }
 
+            protected override int SmallestValueForPart => 1970;
+
             public YearField(string field): base(field)
             {
 
@@ -319,6 +308,8 @@ namespace Chroniton.Schedules.Cron
                 }
             }
 
+            protected override int SmallestValueForPart => 0;
+
             public HoursField(string field) : base(field, 24)
             {
 
@@ -335,6 +326,8 @@ namespace Chroniton.Schedules.Cron
                 }
             }
 
+            protected override int SmallestValueForPart => 0;
+
             public MinutesField(string field) : base(field, 60)
             {
 
@@ -350,6 +343,8 @@ namespace Chroniton.Schedules.Cron
                     return DatePart.Second;
                 }
             }
+
+            protected override int SmallestValueForPart => 0;
 
             public SecondsField(string field) : base(field, 60)
             {
@@ -387,6 +382,8 @@ namespace Chroniton.Schedules.Cron
                 }
             }
 
+            protected override int SmallestValueForPart => 1;
+
             public MonthField(string field): base(convertMonths(field))
             {
                 
@@ -420,7 +417,8 @@ namespace Chroniton.Schedules.Cron
                 new string[] { "THU", "4" },
                 new string[] { "THUR", "4" },
                 new string[] { "FRI", "5" },
-                new string[] { "SAT", "6" }
+                new string[] { "SAT", "6" },
+                new string[] { "#5", "L" }
             };
 
             protected override DatePart DatePart
@@ -431,9 +429,11 @@ namespace Chroniton.Schedules.Cron
                 }
             }
 
+            protected override int SmallestValueForPart => 1;
+
             public DayOfMonthField(string dayOfWeek, string dayOfMonth)
             {
-                _dayOfWeek = dayOfWeek.Replace('?', '*');
+                _dayOfWeek = dayOfWeek.Replace('?', '*').ToUpper();
                 foreach (var item in conversions)
                 {
                     _dayOfWeek = _dayOfWeek.Replace(item[0], item[1]);
@@ -568,7 +568,7 @@ namespace Chroniton.Schedules.Cron
                         int start = int.Parse(range[0]), end = int.Parse(range[1]);
                         for (int i = start; i <= end; i++)
                         {
-                            foreach (var day in getDaysFromWeekDay((DayOfWeek)i))
+                            foreach (var day in getDaysFromWeekDay((DayOfWeek)i, date))
                             {
                                 yield return day;
                             }
@@ -576,7 +576,7 @@ namespace Chroniton.Schedules.Cron
                     }
                     else
                     {
-                        foreach (var day in getDaysFromWeekDay((DayOfWeek)int.Parse(item)))
+                        foreach (var day in getDaysFromWeekDay((DayOfWeek)int.Parse(item), date))
                         {
                             yield return day;
                         }
@@ -584,9 +584,15 @@ namespace Chroniton.Schedules.Cron
                 }
             }
 
-            private IEnumerable<int> getDaysFromWeekDay(DayOfWeek i)
+            private IEnumerable<int> getDaysFromWeekDay(DayOfWeek dayOfWeek, DateTime date)
             {
-                throw new NotImplementedException();
+                int first = getNDayOfWeekFromMonth(dayOfWeek, 1, date);
+                var trackingDate = date.AddDays(first - date.Day);
+                do
+                {
+                    yield return trackingDate.Day;
+                    trackingDate = trackingDate.AddDays(7);
+                } while (trackingDate.Month == date.Month);
             }
 
             private int getNDayOfWeekFromMonth(DayOfWeek dayOfWeek, int number, DateTime date)
@@ -604,9 +610,9 @@ namespace Chroniton.Schedules.Cron
                 var lastDay = getLastDayOfMonth(date);
                 while (lastDay.DayOfWeek != day)
                 {
-                    date = date.AddDays(-1);
+                    lastDay = lastDay.AddDays(-1);
                 }
-                return date.Day;
+                return lastDay.Day;
             }
         }
     }

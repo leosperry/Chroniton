@@ -57,9 +57,12 @@ namespace Chroniton.Tests.Schedules
             {
                 [Theory
                     , InlineData("0 0 0 ? * SUN#2 *", "1/31/1998 00:00:00", "2/8/1998 00:00:00")
-                    , InlineData("0 0 0 ? * SUN *", "1/1/1998 00:00:00", "2/1/1998 00:00:01")
+                    , InlineData("0 0 0 ? * 0L *", "1/31/1998 00:00:00", "2/22/1998 00:00:00")
+                    , InlineData("0 0 0 ? * SUN#5 *", "1/31/1998 00:00:00", "2/22/1998 00:00:00")
+                    , InlineData("0 0 0 ? * SUN *", "1/31/1998 00:00:00", "2/1/1998 00:00:00")
                     , InlineData("0 0 0 1 JAN ? *", "1/1/2000 00:00:00", "1/1/2001 00:00:00")
-                    , InlineData("0 0 0 1 JAN ? 2000", "1/1/2000 00:00:00", null)]
+                    , InlineData("0 0 0 1 JAN ? 2000", "1/1/2000 00:00:00", null)
+                    ]
                 public void ShouldReturnCorrectly(string input, string startDate, string expectedDate)
                 {
                     initParser();

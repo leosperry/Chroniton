@@ -109,7 +109,7 @@ namespace Chroniton.Schedules.Cron
 
             protected int getNearestInt(int target, IEnumerable<int> ints)
             {
-                int nextBiggest = int.MaxValue, nextSmallest = int.MinValue;
+                int nextBiggest = int.MaxValue;
                 foreach (int i in ints)
                 {
                     if (i == target)
@@ -233,7 +233,7 @@ namespace Chroniton.Schedules.Cron
                     }
                     else
                     {
-                        return input;
+                        return base.addTime(input, SmallestValueForPart - partValue);
                     }
                 }
             }
@@ -507,7 +507,7 @@ namespace Chroniton.Schedules.Cron
                 var newday = getNextInt(input.Day, availableValues);
                 if (newday == null)
                 {
-                    return input;
+                    return base.addTime(input, SmallestValueForPart - getPartFromDate(input));
                 }
                 else
                 {

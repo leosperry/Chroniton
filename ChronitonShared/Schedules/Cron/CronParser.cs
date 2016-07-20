@@ -13,7 +13,7 @@ namespace Chroniton.Schedules.Cron
         const string dayOfMonthPattern = @"(0?[1-9]|[12][0-9]|3[01])";
         const string monthPattern = @"(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC|(0?[0-9]|1[0-2]))";
         const string dayOfWeekPattern = @"(SUN|MON|TUE|WED|THUR?|FRI|SAT|[0-6])";
-        const string optDayOfWeek = @"((L|#[1-5])?)|";
+        const string optDayOfWeek = @"((L|#[1-5])?)";
         const string yearPattern = @"([0-9]{4})";
         const string hyphenCommaPattern = @"((({0}{1}(\-{0})?)(,{0}(\-{0})?)*)|(\*{3}){2})";
 
@@ -28,7 +28,7 @@ namespace Chroniton.Schedules.Cron
                 new string[] { hoursPattern, string.Empty, string.Empty, @"(/([23468]|12))?"},
                 new string[] { dayOfMonthPattern, string.Empty, $@"|({dayOfMonthPattern}W)|L|\?", string.Empty },
                 new string[] { monthPattern, string.Empty, string.Empty, string.Empty },
-                new string[] { dayOfWeekPattern, optDayOfWeek, @"|\?", string.Empty },
+                new string[] { dayOfWeekPattern, optDayOfWeek, string.Empty, @"|\?" },
                 new string[] { yearPattern, string.Empty, string.Empty, string.Empty },
             };
             var inner =

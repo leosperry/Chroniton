@@ -5,14 +5,19 @@
 
 A library for running tasks(jobs) on schedules. It supports:
 
-* Strongly typed jobs
+* Strongly typed jobs with strongly typed parameters
+* Asynchronous execution
+* Running a single job on multiple schedules
+* Running Multiple jobs on a single schedule
+* Cron schedules
+* Run once and expiring schedules
 * Custom schedules
-* Running jobs on multiple schedules
-* Multiple jobs on a single schedule.
 * Limiting the number of threads on which work is done
 * Managing behaviors of jobs which run beyond their next scheduled time
 * Dependency Injection initialization
+* Full mocking for unit tests
 * .NET Core
+
  
 See [Wiki](https://github.com/leosperry/Chroniton/wiki) and [Tutorial](https://github.com/leosperry/Chroniton/wiki/Tutorial) for more info. Official site [here](http://chroniton.net/).
 
@@ -20,9 +25,8 @@ See [Wiki](https://github.com/leosperry/Chroniton/wiki) and [Tutorial](https://g
 ```C#
     var singularity = Singularity.Instance;
 
-    var job = new SimpleParameterizedJob<string>(
-        (parameter, scheduledTime) => Task.Run(() => 
-        Console.WriteLine($"{parameter}\tscheduled: {scheduledTime.ToString("o")}")));
+    var job = new SimpleParameterizedJob<string>((parameter, scheduledTime) => 
+        Console.WriteLine($"{parameter}\tscheduled: {scheduledTime.ToString("o")}"));
 
     var schedule = new EveryXTimeSchedule(TimeSpan.FromSeconds(1));
 
@@ -49,7 +53,8 @@ In the above example, here's what happens:
 The first job starts immediately and print's "Hello World" once every second.
 Five seconds later the second job starts and prints "Hello World2" every second.
 Five seconds later the first job stops and only the second job is running.
-Five seconds later, Stop() is called and the second job also stops.
+Five seconds later, `Stop()` is called and the second job also stops.
+Notice the same job is used with multiple schedules with different parameters.
 
 ## Motivation
 
@@ -61,7 +66,7 @@ in your nuget package manager:
 
 `Install-Package Chroniton`
 
-for the .NETCore version use this command:
+for .NET Core use:
 
 `Install-Package Chroniton.NetCore`
 
@@ -75,15 +80,22 @@ leosperry@outlook.com
 Licensed under the MIT License
 
 ## Changes
+### V 1.0.3
+* Cron string support
+* XUnit
+* Simplified constructors for SimpleJob and SimpleParameterizedJob
 
-Simplified Singularity by removing one of the main loops.
-Added .NET Core support
+### V 1.0.2
+* Support for run once and expiring jobs
+
+### V 1.0.1
+* Simplified Singularity by removing one of the main loops.
+* Added .NET Core support
 
 ## Future Features
 
 * Serialization
-* More Built in Schedule types
-* XUnit
+* Distributed execution
 
 ## Notes
 

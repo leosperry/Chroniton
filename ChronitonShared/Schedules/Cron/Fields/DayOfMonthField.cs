@@ -134,7 +134,7 @@ namespace Chroniton.Schedules.Cron.Fields
 
         private IEnumerable<int> cleanLastDaysOfMonth(DateTime input, IEnumerable<int> availableValues)
         {
-            bool lastDayReturnd = false;
+            bool lastDayReturned = false;
             var lastDay = getLastDayOfMonth(input).Day;
             foreach (var item in availableValues)
             {
@@ -144,9 +144,9 @@ namespace Chroniton.Schedules.Cron.Fields
                 }
                 else
                 {
-                    if (!lastDayReturnd)
+                    if (!lastDayReturned)
                     {
-                        lastDayReturnd = true;
+                        lastDayReturned = true;
                         yield return lastDay;
                     }
                 }

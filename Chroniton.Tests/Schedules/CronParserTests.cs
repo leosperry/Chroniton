@@ -35,6 +35,7 @@ namespace Chroniton.Tests.Schedules
         }
 
         [Theory
+            , InlineData(null)
             , InlineData("")
             , InlineData("easter egg hint: relativity")
             , InlineData("0 1 2 3 JAN SUN 2000")

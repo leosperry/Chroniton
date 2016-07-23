@@ -38,6 +38,10 @@ namespace Chroniton.Schedules.Cron
 
         public CronDateFinder Parse(string cronString)
         {
+            if (string.IsNullOrEmpty(cronString))
+            {
+                throw new CronParsingException("invalid cron string");
+            }
             Match m = _reg.Match(cronString);
             if (!m.Success)
             {

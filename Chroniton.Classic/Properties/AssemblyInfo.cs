@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Chroniton")]
-[assembly: AssemblyDescription("A library for running tasks(jobs) on schedules.")]
+[assembly: AssemblyDescription("Chroniton is a light-weight, fully customizable, fully integrable, strongly typed, and open source solution for scheduling Tasks.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Leonard Sperry")]
 [assembly: AssemblyProduct("Chroniton")]

@@ -140,7 +140,6 @@ namespace Chroniton.Schedules.Cron.Fields
         {
             if (availableValues == null)
             {
-                //wrong
                 return IncrementTime(input);
             }
             else

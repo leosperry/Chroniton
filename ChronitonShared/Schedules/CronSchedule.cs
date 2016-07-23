@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chroniton.Schedules.Cron;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,21 +9,20 @@ namespace Chroniton.Schedules
 {
 
 
-    public class CronSchedule
+    public class CronSchedule : ISchedule
     {
+        CronDateFinder _finder;
+
         public CronSchedule(string cron)
         {
+            _finder = new CronParser().Parse(cron);
         }
 
-        class Cron
-        {
-            public string Minute { get; set; }
-            public string Hour { get; set; }
-            public string Date { get; set; }
-            public string Month { get; set; }
-            public string DayOfWeek { get; set; }
-            public string Year { get; set; }
+        public string Name { get; set; }
 
+        public DateTime NextScheduledTime(DateTime afterThisTime)
+        {
+            throw new NotImplementedException();
         }
     }
 }

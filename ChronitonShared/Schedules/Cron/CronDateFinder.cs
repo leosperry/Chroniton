@@ -44,6 +44,12 @@ namespace Chroniton.Schedules.Cron
                 else
                 {
                     retVal = fields[currentColumn].GetNext(retVal);
+                    //also set remaining to minimum;
+                    for (int i = currentColumn - 1; i >= 0; i--)
+                    {
+                        var field = fields[i];
+                        retVal = field.SetTimePart(retVal, field.SmallestValueForPart);
+                    }
                 }
 
                 if (retVal > input)
@@ -76,12 +82,14 @@ namespace Chroniton.Schedules.Cron
         {
             protected abstract DatePart DatePart { get; }
 
-            protected abstract int SmallestValueForPart { get; }
+            internal abstract int SmallestValueForPart { get; }
 
             public abstract DateTime GetNext(DateTime input);
 
             public abstract DateTime GetNearestToCurrent(DateTime date);
-            
+
+            internal abstract DateTime SetTimePart(DateTime date, int value);
+
             protected static IEnumerable<int> parseCommaHyphenedInts(string input)
             {
                 foreach (var item in input.Split(','))
@@ -213,7 +221,7 @@ namespace Chroniton.Schedules.Cron
                 {
                     var partValue = getPartFromDate(date);
                     var newValue = getNearestInt(partValue, availableValues);
-                    return addTime(date, newValue - partValue);
+                    return SetTimePart(date, newValue);
                 }
             }
 
@@ -221,6 +229,7 @@ namespace Chroniton.Schedules.Cron
             {
                 if (availableValues == null)
                 {
+                    //wrong
                     return addTime(input, 1);
                 }
                 else
@@ -229,11 +238,11 @@ namespace Chroniton.Schedules.Cron
                     var next = base.getNextInt(partValue, availableValues);
                     if (next.HasValue)
                     {
-                        return base.addTime(input, next.Value - partValue);
+                        return SetTimePart(input, next.Value);
                     }
                     else
                     {
-                        return base.addTime(input, SmallestValueForPart - partValue);
+                        return SetTimePart(input, SmallestValueForPart);
                     }
                 }
             }
@@ -249,11 +258,16 @@ namespace Chroniton.Schedules.Cron
                 }
             }
 
-            protected override int SmallestValueForPart => 1970;
+            internal override int SmallestValueForPart => 1970;
 
             public YearField(string field): base(field)
             {
 
+            }
+
+            internal override DateTime SetTimePart(DateTime date, int value)
+            {
+                return date.AddYears(value - date.Year);
             }
         }
 
@@ -308,12 +322,18 @@ namespace Chroniton.Schedules.Cron
                 }
             }
 
-            protected override int SmallestValueForPart => 0;
+            internal override int SmallestValueForPart => 0;
 
             public HoursField(string field) : base(field, 24)
             {
 
             }
+
+            internal override DateTime SetTimePart(DateTime date, int value)
+            {
+                return date.AddHours(value - date.Hour);
+            }
+
         }
 
         class MinutesField : SimpleFieldWithSlash
@@ -326,11 +346,16 @@ namespace Chroniton.Schedules.Cron
                 }
             }
 
-            protected override int SmallestValueForPart => 0;
+            internal override int SmallestValueForPart => 0;
 
             public MinutesField(string field) : base(field, 60)
             {
 
+            }
+
+            internal override DateTime SetTimePart(DateTime date, int value)
+            {
+                return date.AddMinutes(value - date.Minute);
             }
         }
 
@@ -344,12 +369,18 @@ namespace Chroniton.Schedules.Cron
                 }
             }
 
-            protected override int SmallestValueForPart => 0;
+            internal override int SmallestValueForPart => 0;
 
             public SecondsField(string field) : base(field, 60)
             {
 
             }
+
+            internal override DateTime SetTimePart(DateTime date, int value)
+            {
+                return date.AddSeconds(value - date.Second);
+            }
+
         }
 
         /// <summary>
@@ -382,7 +413,7 @@ namespace Chroniton.Schedules.Cron
                 }
             }
 
-            protected override int SmallestValueForPart => 1;
+            internal override int SmallestValueForPart => 1;
 
             public MonthField(string field): base(convertMonths(field))
             {
@@ -397,6 +428,11 @@ namespace Chroniton.Schedules.Cron
                 }
                 return field;
             }
+            internal override DateTime SetTimePart(DateTime date, int value)
+            {
+                return date.AddMonths(value - date.Month);
+            }
+
         }
 
         /// <summary>
@@ -429,7 +465,13 @@ namespace Chroniton.Schedules.Cron
                 }
             }
 
-            protected override int SmallestValueForPart => 1;
+            internal override int SmallestValueForPart => 1;
+
+            internal override DateTime SetTimePart(DateTime date, int value)
+            {
+                return date.AddDays(value - date.Day);
+            }
+
 
             public DayOfMonthField(string dayOfWeek, string dayOfMonth)
             {
@@ -458,7 +500,7 @@ namespace Chroniton.Schedules.Cron
                 }
                 else if (_dayOfMonth.EndsWith("W"))
                 {
-                    var d = int.Parse(_dayOfMonth.Substring(0, _dayOfMonth.Length - 2));
+                    var d = int.Parse(_dayOfMonth.Substring(0, _dayOfMonth.Length - 1));
                     return getNearestWeekday(d, date);
                 }
 
@@ -473,7 +515,7 @@ namespace Chroniton.Schedules.Cron
                 }
                 
                 var newday = getNearestInt(date.Day, availableValues);
-                return addTime(date, newday - date.Day);
+                return SetTimePart(date, newday);
             }
 
             public override DateTime GetNext(DateTime input)
@@ -481,8 +523,14 @@ namespace Chroniton.Schedules.Cron
                 if (_dayOfMonth == "*" && _dayOfWeek == "*")
                 {
                     var lastDay = getLastDayOfMonth(input);
-                    var nextDay = input.AddDays(1);
-                    return nextDay > lastDay ? lastDay : nextDay;
+                    if (lastDay.Day == input.Day)
+                    {
+                        return SetTimePart(input, SmallestValueForPart);
+                    }
+                    else
+                    {
+                        return addTime(input, 1);
+                    }
                 }
                 else if (_dayOfMonth == "L")
                 {
@@ -490,7 +538,7 @@ namespace Chroniton.Schedules.Cron
                 }
                 else if (_dayOfMonth.EndsWith("W"))
                 {
-                    var d = int.Parse(_dayOfMonth.Substring(0, _dayOfMonth.Length - 2));
+                    var d = int.Parse(_dayOfMonth.Substring(0, _dayOfMonth.Length - 1));
                     return getNearestWeekday(d, input);
                 }
 
@@ -507,20 +555,20 @@ namespace Chroniton.Schedules.Cron
                 var newday = getNextInt(input.Day, availableValues);
                 if (newday == null)
                 {
-                    return base.addTime(input, SmallestValueForPart - getPartFromDate(input));
+                    return SetTimePart(input, SmallestValueForPart);
                 }
                 else
                 {
-                    return addTime(input, newday.Value - input.Day);
+                    return SetTimePart(input, newday.Value);
                 }
             }
 
             private DateTime getNearestWeekday(int day, DateTime date)
             {
-                var newdate = addTime(date, day - date.Day);
-                if (newdate.DayOfWeek > System.DayOfWeek.Saturday && newdate.DayOfWeek < System.DayOfWeek.Sunday)
+                var newdate = SetTimePart(date, day);
+                if (newdate.DayOfWeek < System.DayOfWeek.Saturday && newdate.DayOfWeek > System.DayOfWeek.Sunday)
                 {
-                    return date;
+                    return newdate;
                 }
                 else if (newdate.Day == 1 && newdate.DayOfWeek == System.DayOfWeek.Saturday)
                 {
@@ -544,7 +592,8 @@ namespace Chroniton.Schedules.Cron
 
             private static DateTime getLastDayOfMonth(DateTime date)
             {
-                return date.AddMonths(1).AddDays(-date.Day - 1);
+                var retVal = date.AddMonths(1);
+                return retVal.AddDays(-retVal.Day);
             }
 
             private IEnumerable<int> getAvailableFromDayOfWeek(DateTime date)

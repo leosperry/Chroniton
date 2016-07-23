@@ -15,25 +15,23 @@ namespace Chroniton.Schedules.Cron
 
     public class CronDateFinder
     {
-        public string Seconds { get; set; }
-        public string Minutes { get; set; }
-        public string Hours { get; set; }
-        public string DayOfMonth { get; set; }
-        public string Month { get; set; }
-        public string DayOfWeek { get; set; }
-        public string Year { get; set; }
+        DateField[] _fields;
+
+        public CronDateFinder(string seconds, string minutes, string hours, string dayOfMonth,
+            string month, string dayOfWeek, string year)
+        {
+            _fields = new DateField[] {
+                new SecondsField(seconds),
+                new MinutesField(minutes),
+                new HoursField(hours),
+                new DayOfMonthField(dayOfWeek, dayOfMonth),
+                new MonthField(month),
+                new YearField(year)
+            };
+        }
 
         public DateTime? GetNext(DateTime input)
         {
-            var fields = new DateField[] {
-                new SecondsField(Seconds),
-                new MinutesField(Minutes),
-                new HoursField(Hours),
-                new DayOfMonthField(DayOfWeek, DayOfMonth),
-                new MonthField(Month),
-                new YearField(Year)
-            };
-
             int currentColumn = 5;
             DateTime retVal = new DateTime(
                 input.Year, input.Month, input.Day, 
@@ -47,15 +45,15 @@ namespace Chroniton.Schedules.Cron
                 }
                 if (retVal > input)
                 {
-                    retVal = fields[currentColumn].GetNearestToCurrent(retVal);
+                    retVal = _fields[currentColumn].GetNearestToCurrent(retVal);
                 }
                 else
                 {
-                    retVal = fields[currentColumn].GetNext(retVal);
+                    retVal = _fields[currentColumn].GetNext(retVal);
                     //also set remaining to minimum;
                     for (int i = currentColumn - 1; i >= 0; i--)
                     {
-                        var field = fields[i];
+                        var field = _fields[i];
                         retVal = field.SetTimePart(retVal, field.SmallestValueForPart);
                     }
                 }

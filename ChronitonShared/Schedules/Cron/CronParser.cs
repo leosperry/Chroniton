@@ -18,7 +18,7 @@ namespace Chroniton.Schedules.Cron
 
         static CronParser()
         {
-            string[][] daList = new string[][]
+            string[][] partsList = new string[][]
             {
                 new string[] { secondsMinutesPattern, string.Empty, string.Empty, @"(/([2-6]|1[025]|[23]0))?" },
                 new string[] { secondsMinutesPattern, string.Empty, string.Empty ,@"(/([2-6]|1[025]|[23]0))?"},
@@ -29,7 +29,7 @@ namespace Chroniton.Schedules.Cron
                 new string[] { yearPattern, string.Empty, string.Empty, string.Empty },
             };
             var inner =
-                (from t in daList
+                (from t in partsList
                  select string.Format(hyphenCommaPattern, t[0], t[1], t[2], t[3]))
                 .Aggregate((s1, s2) => $"{s1} {s2}");
 
@@ -41,19 +41,18 @@ namespace Chroniton.Schedules.Cron
             Match m = _reg.Match(cronString);
             if (!m.Success)
             {
-                return null;
+                throw new CronParsingException("invalid cron string");
             }
 
-            return new CronDateFinder()
-            {
-                Seconds = m.Groups[1].Value,
-                Minutes = m.Groups[14].Value,
-                Hours = m.Groups[27].Value,
-                DayOfMonth = m.Groups[40].Value,
-                Month = m.Groups[53].Value,
-                DayOfWeek = m.Groups[68].Value,
-                Year = m.Groups[81].Value
-            };
+            return new CronDateFinder(
+                m.Groups[1].Value,
+                m.Groups[14].Value,
+                m.Groups[27].Value,
+                m.Groups[40].Value,
+                m.Groups[53].Value,
+                m.Groups[68].Value,
+                m.Groups[81].Value
+                );
         }
     }
 }

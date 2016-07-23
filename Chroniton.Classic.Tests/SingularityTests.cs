@@ -181,7 +181,7 @@ namespace Chroniton.Tests
                 {
                     delayReset = new ManualResetEvent(false);
                     UnderTest.MaximumThreads = 1;
-                    longRunningJob = new SimpleJob(async (dt) => await Task.Delay(2000));
+                    longRunningJob = new SimpleJob(dt => Task.Delay(2000).Wait());
                     waitingJob = new SimpleJob((dt) => Task.Run(() => delayReset.Set()));
                 }
 
@@ -243,7 +243,7 @@ namespace Chroniton.Tests
                     [Test]
                     public void ShouldNotRun()
                     {
-                        var job = new SimpleJob((dt) => Task.CompletedTask);
+                        var job = new SimpleJob((dt) => { });
                         UnderTest.ScheduleJob(TestSchedule, job, true);
                         UnderTest.Start();
                         Assert.True(successManualReset.WaitOne());
@@ -263,7 +263,7 @@ namespace Chroniton.Tests
                     [Test]
                     public void ShouldExecute()
                     {
-                        var job = new SimpleJob((dt)=>Task.CompletedTask);
+                        var job = new SimpleJob((dt)=> { });
                         UnderTest.ScheduleJob(TestSchedule, job, true);
                         UnderTest.Start();
                         Assert.True(successManualReset.WaitOne());
@@ -283,7 +283,7 @@ namespace Chroniton.Tests
                     [Test]
                     public void ShouldExecuteWhenRunAgain()
                     {
-                        var job = new SimpleJob((dt) => Task.CompletedTask)
+                        var job = new SimpleJob((dt) => { })
                         { ScheduleMissedBehavior = ScheduleMissedBehavior.RunAgain };
                         UnderTest.ScheduleJob(TestSchedule, job, true);
                         UnderTest.Start();
@@ -295,7 +295,7 @@ namespace Chroniton.Tests
                     [Test]
                     public void ShouldExecuteOnNextWhenSkip()
                     {
-                        var job = new SimpleJob((dt) => Task.Run(() => TestSchedule.NextSchedule = NextScheduleType.Skip))
+                        var job = new SimpleJob((dt) => TestSchedule.NextSchedule = NextScheduleType.Skip)
                         { ScheduleMissedBehavior = ScheduleMissedBehavior.SkipExecution };
                         UnderTest.ScheduleJob(TestSchedule, job, true);
                         UnderTest.Start();
@@ -309,7 +309,7 @@ namespace Chroniton.Tests
                     [Test]
                     public void ShouldReportExceptionWhenSkipAndStillEarlier()
                     {
-                        var job = new SimpleJob((dt) => Task.CompletedTask)
+                        var job = new SimpleJob((dt) => { })
                         { ScheduleMissedBehavior = ScheduleMissedBehavior.SkipExecution };
                         UnderTest.ScheduleJob(TestSchedule, job, true);
                         UnderTest.Start();
@@ -321,7 +321,7 @@ namespace Chroniton.Tests
                     [Test]
                     public void ShouldReportExceptionWhenExceptionSet()
                     {
-                        var job = new SimpleJob((dt) => Task.CompletedTask)
+                        var job = new SimpleJob((dt) => { })
                         { ScheduleMissedBehavior = ScheduleMissedBehavior.ThrowException };
                         UnderTest.ScheduleJob(TestSchedule, job, true);
                         UnderTest.Start();
@@ -374,7 +374,7 @@ namespace Chroniton.Tests
                 [SetUp]
                 public void SetUpSchedule()
                 {
-                    TestJob = new SimpleJob((dt)=> Task.CompletedTask);
+                    TestJob = new SimpleJob((dt)=> { });
                     TestSchedule = new TestSchedule() { NextSchedule = NextScheduleType.Later };
                 }
 

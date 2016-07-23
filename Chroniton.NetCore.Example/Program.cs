@@ -15,9 +15,8 @@ namespace Chroniton.NetCore.Example
             var factory = new SingularityFactory();
             var singularity = factory.GetSingularity();
 
-            var job = new SimpleParameterizedJob<string>(
-                (parameter, scheduledTime) => Task.Run(() =>
-                Console.WriteLine($"{parameter}\tscheduled: {scheduledTime.ToString("o")}")));
+            var job = new SimpleParameterizedJob<string>((parameter, scheduledTime) => 
+                Console.WriteLine($"{parameter}\tscheduled: {scheduledTime.ToString("o")}"));
 
             var schedule = new EveryXTimeSchedule(TimeSpan.FromSeconds(1));
 

@@ -1,30 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chroniton;
-using Microsoft.Practices.Unity;
-using Chroniton.Schedules;
-using System.Threading;
+﻿using Chroniton;
 using Chroniton.Jobs;
+using Chroniton.Schedules;
+using System;
+using System.Threading.Tasks;
 
 namespace ChronitonExample
 {
     class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            UnityContainer container = new UnityContainer();
-
-            container.RegisterType<ISingularityFactory, SingularityFactory>();
-
-            var factory = container.Resolve<ISingularityFactory>();
+            var factory = new SingularityFactory();
             var singularity = factory.GetSingularity();
 
-            var job = new SimpleParameterizedJob<string>(
-                (parameter, scheduledTime) => Task.Run(() => 
-                Console.WriteLine($"{parameter}\tscheduled: {scheduledTime.ToString("o")}")));
+            var job = new SimpleParameterizedJob<string>((parameter, scheduledTime) =>
+                Console.WriteLine($"{parameter}\tscheduled: {scheduledTime.ToString("o")}"));
 
             var schedule = new EveryXTimeSchedule(TimeSpan.FromSeconds(1));
 
@@ -32,17 +22,21 @@ namespace ChronitonExample
                 schedule, job, "Hello World", true); //starts immediately
 
             var startTime = DateTime.UtcNow.Add(TimeSpan.FromSeconds(5));
+            var schedule2 = new CronSchedule("* * * * * * *");
 
             var scheduledJob2 = singularity.ScheduleParameterizedJob(
-                schedule, job, "Hello World 2", startTime);
+                schedule2, job, "Hello World 2", startTime);
+
+            var scheduledJob3 = singularity.ScheduleParameterizedJob(
+                new RunOnceSchedule(TimeSpan.FromSeconds(3)), job, "Hello World 3", false);
 
             singularity.Start();
 
-            Thread.Sleep(10 * 1000);
+            Task.Delay(10 * 1000).Wait();
 
             singularity.StopScheduledJob(scheduledJob);
 
-            Thread.Sleep(5 * 1000);
+            Task.Delay(5 * 1000).Wait();
 
             singularity.Stop();
 

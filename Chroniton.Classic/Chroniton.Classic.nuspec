@@ -7,7 +7,7 @@
     <authors>$author$</authors>
     <owners>$author$</owners>
     <licenseUrl>https://raw.githubusercontent.com/leosperry/Chroniton/master/LICENSE</licenseUrl>
-    <projectUrl>https://chroniton.net</projectUrl>
+    <projectUrl>http://chroniton.net</projectUrl>
     <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>

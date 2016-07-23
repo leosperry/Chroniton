@@ -6,7 +6,7 @@
     <SharedGUID>4dbd42d5-a0ea-44b1-b014-701b53781916</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>ChronitonShared</Import_RootNamespace>
+    <Import_RootNamespace>Chroniton</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
@@ -17,6 +17,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)ScheduledJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScheduleMissedBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedules\ConstantSchedule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Schedules\CronSchedule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Schedules\Cron\CronDateFinder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Schedules\Cron\CronParser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Schedules\Cron\CronParsingException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Schedules\Cron\Fields\AbstractFields.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Schedules\Cron\Fields\ConcreteFields.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Schedules\Cron\Fields\DayOfMonthField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedules\EveryXTimeSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedules\RunOnceSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedules\SimpleSchedule.cs" />

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Chroniton")]
-[assembly: AssemblyDescription("Chroniton is a light-weight, fully customizable, fully integrable, strongly typed, and open source solution for scheduling Tasks.")]
+[assembly: AssemblyTitle("Chroniton.Tests")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Leonard Sperry")]
-[assembly: AssemblyProduct("Chroniton")]
-[assembly: AssemblyCopyright("Copyright © Leonard Sperry 2016")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Chroniton.Tests")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3ff8b693-0586-4199-afec-023d41ce95ad")]
+[assembly: Guid("e639cbe8-70a7-41ad-8adf-8524765ad9f1")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.2")]
-[assembly: AssemblyFileVersion("1.0.2")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

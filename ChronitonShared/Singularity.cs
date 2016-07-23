@@ -146,7 +146,7 @@ namespace Chroniton
             while (_started)
             {
                 var scheduledJob = _scheduledQueue.Peek();
-                if (scheduledJob != null && scheduledJob.NextRun < DateTime.UtcNow)
+                if (scheduledJob != null && scheduledJob.RunTime < DateTime.UtcNow)
                 {
                     SpinWait.SpinUntil(() => _tasks.Count < this.MaximumThreads);
                     //we know we need to fire the next job
@@ -181,24 +181,25 @@ namespace Chroniton
         {
             if (_started && !job.PreventReschedule)
             {
+                job.RunCount++;
                 var task = Task.Run(job.JobTask);
                 _tasks.Add(task);
                 task.ContinueWith(t => jobEnd(task, job));
             }
         }
 
-        private void jobEnd(Task t, ScheduledJob job)
+        private void jobEnd(Task jobTask, ScheduledJob job)
         {
-            if (t.Exception == null)
+            if (jobTask.Exception == null)
             {
                 Task.Run(() => _onSuccess?.Invoke(new ScheduledJobEventArgs(job)));
             }
             else
             {
                 Task.Run(() => _onJobError?.Invoke(new ScheduledJobEventArgs(job),
-                    t.Exception is AggregateException? t.Exception.InnerException : t.Exception));
+                    jobTask.Exception is AggregateException? jobTask.Exception.InnerException : jobTask.Exception));
             }
-            _tasks.Remove(t);
+            _tasks.Remove(jobTask);
 
             setNextExecution(job);
         }
@@ -212,11 +213,15 @@ namespace Chroniton
             DateTime next, now = DateTime.UtcNow;
             try
             {
-                next = job.Schedule.NextScheduledTime(job.NextRun);
+                next = job.Schedule.NextScheduledTime(job);
             }
             catch (Exception ex)
             {
                 _onScheduleError?.Invoke(new ScheduledJobEventArgs(job), ex);
+                return;
+            }
+            if (next == Chroniton.Constants.Never)
+            {
                 return;
             }
             if (next < now)
@@ -227,7 +232,7 @@ namespace Chroniton
                         next = now;
                         break;
                     case ScheduleMissedBehavior.SkipExecution:
-                        next = job.Schedule.NextScheduledTime(next);
+                        next = job.Schedule.NextScheduledTime(job);
                         if (next < now)
                         {
                             _onScheduleError?.Invoke(new ScheduledJobEventArgs(job), 
@@ -246,8 +251,16 @@ namespace Chroniton
 
         public IScheduledJob ScheduleJob(ISchedule schedule, IJob job, bool runImmediately)
         {
-            DateTime firstRun = runImmediately ? DateTime.UtcNow : schedule.NextScheduledTime(DateTime.Now);
-            return ScheduleJob(schedule, job, firstRun);
+            var scheduledJob = new ScheduledJob()
+            {
+                Job = job,
+                Schedule = schedule
+            };
+            scheduledJob.JobTask = new Func<Task>(() => job.Start(scheduledJob.RunTime));
+            DateTime firstRun = runImmediately ? DateTime.UtcNow : schedule.NextScheduledTime(scheduledJob);
+
+            queueJob(firstRun, scheduledJob);
+            return scheduledJob;
         }
 
         public IScheduledJob ScheduleJob(ISchedule schedule, IJob job, DateTime firstRun)
@@ -257,7 +270,7 @@ namespace Chroniton
                 Job = job,
                 Schedule = schedule
             };
-            scheduledJob.JobTask = new Func<Task>(()=> job.Start(scheduledJob.NextRun));
+            scheduledJob.JobTask = new Func<Task>(()=> job.Start(scheduledJob.RunTime));
 
             queueJob(firstRun, scheduledJob);
             return scheduledJob;
@@ -265,8 +278,17 @@ namespace Chroniton
 
         public IScheduledJob ScheduleParameterizedJob<T>(ISchedule schedule, IParameterizedJob<T> job, T parameter, bool runImmediately)
         {
-            DateTime firstRun = runImmediately ? DateTime.UtcNow : schedule.NextScheduledTime(DateTime.Now);
-            return ScheduleParameterizedJob(schedule, job, parameter, firstRun);
+            var scheduledJob = new ScheduledJob()
+            {
+                Job = job,
+                Schedule = schedule,
+            };
+            scheduledJob.JobTask = new Func<Task>(() => job.Start(parameter, scheduledJob.RunTime));
+            DateTime firstRun = runImmediately ? DateTime.UtcNow : schedule.NextScheduledTime(scheduledJob);
+
+            queueJob(firstRun, scheduledJob);
+
+            return scheduledJob;
         }
 
         public IScheduledJob ScheduleParameterizedJob<T>(ISchedule schedule, IParameterizedJob<T> job, T parameter, DateTime firstRun)
@@ -276,7 +298,7 @@ namespace Chroniton
                 Job = job,
                 Schedule = schedule,
             };
-            scheduledJob.JobTask = new Func<Task>(() => job.Start(parameter, scheduledJob.NextRun));
+            scheduledJob.JobTask = new Func<Task>(() => job.Start(parameter, scheduledJob.RunTime));
 
             queueJob(firstRun, scheduledJob);
 
@@ -285,7 +307,7 @@ namespace Chroniton
 
         private void queueJob(DateTime nextRun, ScheduledJob scheduledJob)
         {
-            scheduledJob.NextRun = nextRun;
+            scheduledJob.RunTime = nextRun;
             _scheduledQueue.Add(scheduledJob);
             _onScheduled?.Invoke(new ScheduledJobEventArgs(scheduledJob));
         }

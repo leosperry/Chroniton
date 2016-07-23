@@ -8,7 +8,8 @@ namespace Chroniton
     {
         IJobBase Job { get; }
         ISchedule Schedule { get; }
-        DateTime NextRun { get; }
+        DateTime RunTime { get; }
+        int RunCount { get; }
     }
 
     internal class ScheduledJob : IScheduledJob, IComparable<IScheduledJob>
@@ -17,11 +18,13 @@ namespace Chroniton
 
         public ISchedule Schedule { get; internal set; }
 
-        public DateTime NextRun { get; internal set; }
+        public DateTime RunTime { get; internal set; }
+
+        public int RunCount { get; internal set; }
 
         public int CompareTo(IScheduledJob other)
         {
-            return this.NextRun.CompareTo(other.NextRun);
+            return this.RunTime.CompareTo(other.RunTime);
         }
 
         internal Func<Task> JobTask { get; set; }

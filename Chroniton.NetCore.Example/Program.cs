@@ -29,8 +29,11 @@ namespace Chroniton.NetCore.Example
             var scheduledJob2 = singularity.ScheduleParameterizedJob(
                 schedule, job, "Hello World 2", startTime);
 
-            singularity.Start();
+            var scheduledJob3 = singularity.ScheduleParameterizedJob(
+                new RunOnceSchedule(TimeSpan.FromSeconds(3)), job, "Hello World 3", false);
 
+            singularity.Start();
+        
             Task.Delay(10 * 1000).Wait();
 
             singularity.StopScheduledJob(scheduledJob);

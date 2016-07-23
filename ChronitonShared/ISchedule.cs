@@ -15,8 +15,9 @@ namespace Chroniton
         /// Is called with the previous execution time to determine the next
         /// </summary>
         /// <param name="afterThisTime">the time to be used to calculate th next time</param>
+        /// <param name="currentExecutionCount">the number of times the IScheduledJob has run</param>
         /// <returns></returns>
-        DateTime NextScheduledTime(DateTime afterThisTime);
+        DateTime NextScheduledTime(IScheduledJob scheduledJob);
     }
 
     /// <summary>

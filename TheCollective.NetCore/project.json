@@ -3,7 +3,7 @@
   "packOptions": {
     "owners": [ "Leonard Sperry" ],
     "repository": {
-      "url": "https://chroniton.net"
+      "url": "http://chroniton.net"
     },
     "licenseUrl": "https://raw.githubusercontent.com/leosperry/Chroniton/master/LICENSE",
     "tags": [ "TheCollective", "netcore", "coreclr", "collection", "collections", "concurrent", "priorityqueue", "minheap", "maxheap", "hashset" ],

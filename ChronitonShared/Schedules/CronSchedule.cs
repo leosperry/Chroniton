@@ -1,14 +1,8 @@
 ﻿using Chroniton.Schedules.Cron;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Chroniton.Schedules
 {
-
-
     public class CronSchedule : ISchedule
     {
         CronDateFinder _finder;
@@ -20,9 +14,17 @@ namespace Chroniton.Schedules
 
         public string Name { get; set; }
 
-        public DateTime NextScheduledTime(DateTime afterThisTime)
+        public DateTime NextScheduledTime(IScheduledJob scheduledJob)
         {
-            throw new NotImplementedException();
+            var date = _finder.GetNext(scheduledJob.RunTime);
+            if (date.HasValue)
+            {
+                return date.Value;
+            }
+            else
+            {
+                return Constants.Never;
+            }
         }
     }
 }

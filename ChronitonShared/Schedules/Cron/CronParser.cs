@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Linq;
 using System.Text.RegularExpressions;
-using System.Linq;
 
 namespace Chroniton.Schedules.Cron
 {
@@ -37,11 +34,6 @@ namespace Chroniton.Schedules.Cron
                 .Aggregate((s1, s2) => $"{s1} {s2}");
 
             _reg = new Regex($"^{inner}$");
-        }
-
-        public CronParser()
-        {
-
         }
 
         public CronDateFinder Parse(string cronString)

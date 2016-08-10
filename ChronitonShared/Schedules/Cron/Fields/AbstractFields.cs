@@ -66,7 +66,7 @@ namespace Chroniton.Schedules.Cron.Fields
             }
             else
             {
-                return SmallestValueForPart;
+                return ints.Aggregate((i1, i2) => i1 < i2 ? i1 : i2);
             }
         }
 

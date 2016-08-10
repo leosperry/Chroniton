@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Chroniton.Schedules.Cron;
+using System;
 using Xunit;
-using Chroniton.Schedules.Cron;
 
 namespace Chroniton.Tests.Schedules
 {

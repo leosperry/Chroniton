@@ -11,7 +11,7 @@ namespace Chroniton.Schedules
 
         public string Name { get; set; }
 
-        public DateTime NextScheduledTime(IScheduledJob scheduledJob)
+        public virtual DateTime NextScheduledTime(IScheduledJob scheduledJob)
         {
             if (scheduledJob.RunCount > 0)
             {

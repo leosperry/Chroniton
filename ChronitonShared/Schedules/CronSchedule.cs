@@ -14,7 +14,7 @@ namespace Chroniton.Schedules
 
         public string Name { get; set; }
 
-        public DateTime NextScheduledTime(IScheduledJob scheduledJob)
+        public virtual DateTime NextScheduledTime(IScheduledJob scheduledJob)
         {
             var date = _finder.GetNext(scheduledJob.RunTime);
             if (date.HasValue)

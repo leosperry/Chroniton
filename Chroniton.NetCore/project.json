@@ -11,7 +11,7 @@
     },
     "tags": [ "Chroniton", "netcore", "coreclr", "scheduling", "scheduler", "task", "tasks", "job", "jobs", "background", "worker", "trigger", "recurring", "trigger", "cron" ]
   },
-  "version": "1.0.3.1",
+  "version": "1.0.3.2",
 
   "buildOptions": {
     "compile": {

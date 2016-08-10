@@ -177,8 +177,16 @@ namespace Chroniton.Schedules.Cron.Fields
             // so, it is accurate
             if (field.Contains("/"))
             {
-                var divisionAmountStr = field.Substring(field.IndexOf('/') + 1);
-                var multiplier = int.Parse(divisionAmountStr);
+                var pieces = field.Split('/');
+                var multiplier = int.Parse(pieces[1]);
+
+                var start = 0;
+                if (pieces[0] != "*" && pieces[0] != "0")
+                {
+                    start = int.Parse(pieces[0]);
+                    start = start % multiplier;
+                }
+
                 if (total % multiplier != 0)
                 {
                     // by this point, after the regex, it had better be divisible
@@ -189,7 +197,7 @@ namespace Chroniton.Schedules.Cron.Fields
 
                 return
                     (from i in Enumerable.Range(0, total / multiplier)
-                     select (i * multiplier).ToString())
+                     select (start + i * multiplier).ToString())
                     .Aggregate((s1, s2) => $"{s1},{s2}");
             }
             else 

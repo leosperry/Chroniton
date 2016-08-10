@@ -34,7 +34,7 @@ namespace Chroniton.Schedules.Cron.Fields
     /// allows the text features of the month field
     /// to work with the simple field
     /// </summary>
-    class MonthField : SimpleField
+    class MonthField : SimpleFieldWithSlash
     {
         static readonly string[][] conversions = new string[][]
         {
@@ -62,7 +62,7 @@ namespace Chroniton.Schedules.Cron.Fields
 
         internal override int SmallestValueForPart => 1;
 
-        public MonthField(string field) : base(convertMonths(field))
+        public MonthField(string field) : base(convertMonths(field),12)
         {
 
         }

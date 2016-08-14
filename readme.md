@@ -56,6 +56,10 @@ Five seconds later the first job stops and only the second job is running.
 Five seconds later, `Stop()` is called and the second job also stops.
 Notice the same job is used with multiple schedules with different parameters.
 
+## Coming Soon !!!
+
+The above code works with the currently released version. A new version with serialization features is on the way and has been started. There will be some breaking changes. If you'd like to see some of the changes coming, check out the [Serialization branch](https://github.com/leosperry/Chroniton/tree/Serialize). The core logic for how jobs run will not change, but how jobs get added has. I'm personally very excited to be bringing these changes as it opens up a world of possibilites for the project.
+
 ## Motivation
 
 This project was inspired for the need to have a strongly typed .NET solution for running tasks on schedules. 

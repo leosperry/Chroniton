@@ -10,6 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IChronitonFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IContinuum.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISingularity.cs" />
@@ -28,6 +31,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Schedules\RunOnceSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedules\SimpleSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Singularity.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SingularityFactory.cs" />
   </ItemGroup>
 </Project>

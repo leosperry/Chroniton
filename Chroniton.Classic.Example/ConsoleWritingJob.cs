@@ -39,6 +39,8 @@ namespace ChronitonExample
 
         public string Name { get; set; }
 
+        public string Parameter { get; set; }
+
         public ScheduleMissedBehavior ScheduleMissedBehavior
         {
             get

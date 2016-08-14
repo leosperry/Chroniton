@@ -1,33 +1,24 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Chroniton
 {
-    public interface IScheduledJob : IComparable<IScheduledJob>
+    public abstract class ScheduledJobBase : IComparable<ScheduledJobBase>
     {
-        IJobBase Job { get; }
-        ISchedule Schedule { get; }
-        DateTime RunTime { get; }
-        int RunCount { get; }
-    }
+        public Guid ID { get; set; }
 
-    internal class ScheduledJob : IScheduledJob, IComparable<IScheduledJob>
-    {
-        public IJobBase Job { get; internal set; }
+        public ISchedule Schedule { get; set; }
 
-        public ISchedule Schedule { get; internal set; }
+        public DateTime RunTime { get; set; }
 
-        public DateTime RunTime { get; internal set; }
+        public int RunCount { get; set; }
 
-        public int RunCount { get; internal set; }
-
-        public int CompareTo(IScheduledJob other)
+        public int CompareTo(ScheduledJobBase other)
         {
             return this.RunTime.CompareTo(other.RunTime);
         }
-
-        internal Func<Task> JobTask { get; set; }
 
         ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
@@ -58,6 +49,37 @@ namespace Chroniton
                     if (_lock.IsWriteLockHeld) _lock.ExitWriteLock();
                 }
             }
+        }
+
+        public abstract Task Execute(DateTime scheduledTime);
+
+        public IJobBase GetJob()
+        {
+            var propInfo = this.GetType().GetTypeInfo()
+                .GetProperty("Job");
+            return (IJobBase)(propInfo?.GetValue(this));
+        }
+    }
+
+    public class ScheduledJob: ScheduledJobBase
+    {
+        public IJob Job { get; set; }
+
+        public override async Task Execute(DateTime scheduledTime)
+        {
+            await Job.Start(scheduledTime);
+        }
+    }
+
+    public class ParameterizedScheduledJob<T> : ScheduledJobBase
+    {
+        public T Parameter { get; set; }
+
+        public IParameterizedJob<T> Job { get; set; }
+
+        public override async Task Execute(DateTime scheduledTime)
+        {
+            await Job.Start(Parameter, scheduledTime);
         }
     }
 }

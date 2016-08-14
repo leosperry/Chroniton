@@ -27,6 +27,8 @@ namespace Chroniton
 
     public interface IParameterizedJob<T> : IJobBase
     {
+        T Parameter { get; set; }
+
         /// <summary>
         /// is called when the job is scheduled to run
         /// </summary>

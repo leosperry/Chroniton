@@ -10,7 +10,7 @@ namespace Chroniton.Schedules
     {
         public string Name { get; set; }
 
-        public DateTime NextScheduledTime(IScheduledJob scheduledJob)
+        public DateTime NextScheduledTime(ScheduledJobBase scheduledJob)
         {
             return DateTime.UtcNow;
         }

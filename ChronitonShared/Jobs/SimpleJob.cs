@@ -50,6 +50,8 @@ namespace Chroniton.Jobs
     {
         public string Name { get; set; }
 
+        public T Parameter { get; set; }
+
         public virtual ScheduleMissedBehavior ScheduleMissedBehavior { get; set; }
             = ScheduleMissedBehavior.RunAgain;
 

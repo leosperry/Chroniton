@@ -17,6 +17,9 @@
     "compile": {
       "include": [
         "../ChronitonShared/Constants.cs",
+        "../ChronitonShared/Events.cs",
+        "../ChronitonShared/IChronitonFactory.cs",
+        "../ChronitonShared/IContinuum.cs",
         "../ChronitonShared/IJob.cs",
         "../ChronitonShared/ISchedule.cs",
         "../ChronitonShared/ISingularity.cs",

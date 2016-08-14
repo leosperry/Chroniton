@@ -24,7 +24,7 @@ namespace Chroniton.Schedules
             get; set;
         }
 
-        public DateTime NextScheduledTime(IScheduledJob scheduledJob)
+        public DateTime NextScheduledTime(ScheduledJobBase scheduledJob)
         {
             return scheduledJob.RunTime + _interval;
         }

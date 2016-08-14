@@ -138,6 +138,14 @@ namespace TheCollective
             return success;
         }
 
+        public IEnumerable<T> FindWhere(Func<T,bool> predicate)
+        {
+            lock (_loc)
+            {
+                return _internal.Take(_count).Where(predicate).ToList();
+            }
+        }
+
         private void shiftDown(int index)
         {
             int childIndex = getFirstChildIndex(index);

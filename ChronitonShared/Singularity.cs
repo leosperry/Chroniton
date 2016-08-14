@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using TheCollective;
@@ -7,8 +9,8 @@ namespace Chroniton
 {
     public class Singularity : ISingularity
     {
-        MinHeap<ScheduledJob> _scheduledQueue = new MinHeap<ScheduledJob>();
         ConcurrentHashSet<Task> _tasks = new ConcurrentHashSet<Task>();
+        IContinuumFactory _multiverse = new ContinuumFactory();
 
         Task _schedulingThread = null;
         object _startStopLoc = new { };
@@ -31,9 +33,7 @@ namespace Chroniton
             }
         }
 
-        internal Singularity()
-        {
-        }
+        internal Singularity() { }
 
         ~Singularity()
         {
@@ -132,8 +132,8 @@ namespace Chroniton
             if (_started)
             {
                 _started = false;
-                Task.WaitAll(_schedulingThread);
-                while (_scheduledQueue.Count > 0) { _scheduledQueue.Extract(); }
+                _schedulingThread.Wait();
+                Task.WaitAll(_multiverse.Select(c => c.CleanUp()).ToArray());
             }
         }
 
@@ -145,16 +145,15 @@ namespace Chroniton
         {
             while (_started)
             {
-                var scheduledJob = _scheduledQueue.Peek();
-                if (scheduledJob != null && scheduledJob.RunTime < DateTime.UtcNow)
+                SpinWait.SpinUntil(() => _tasks.Count < this.MaximumThreads);
+                foreach (var continuum in _multiverse)
                 {
-                    SpinWait.SpinUntil(() => _tasks.Count < this.MaximumThreads);
-                    //we know we need to fire the next job
-                    //another higher priority scheduled job could've been added while waiting
-                    //So, we need to extract (which will be thread safe) the 
-                    //next item from the queue
-
-                    runJob(_scheduledQueue.Extract());
+                    var scheduledJob = continuum.GetNext();
+                    //if (scheduledJob != null && scheduledJob.RunTime < DateTime.UtcNow)
+                    if (scheduledJob != null)
+                    {
+                        runJob(scheduledJob, continuum);
+                    }
                 }
                 wait();
             }//something said stop
@@ -177,18 +176,18 @@ namespace Chroniton
             SpinWait.SpinUntil(() => DateTime.UtcNow > waitUntil);
         }
 
-        private void runJob(ScheduledJob job)
+        private void runJob(ScheduledJobBase scheduledJob, IContinuum continuum)
         {
-            if (_started && !job.PreventReschedule)
+            if (_started)
             {
-                job.RunCount++;
-                var task = Task.Run(job.JobTask);
+                scheduledJob.RunCount++;
+                var task = scheduledJob.Execute(scheduledJob.RunTime);
                 _tasks.Add(task);
-                task.ContinueWith(t => jobEnd(task, job));
+                task.ContinueWith(t => jobEnd(task, scheduledJob, continuum));
             }
         }
 
-        private void jobEnd(Task jobTask, ScheduledJob job)
+        private void jobEnd(Task jobTask, ScheduledJobBase job, IContinuum continuum)
         {
             if (jobTask.Exception == null)
             {
@@ -201,23 +200,23 @@ namespace Chroniton
             }
             _tasks.Remove(jobTask);
 
-            setNextExecution(job);
+            setNextExecution(job, continuum);
         }
 
-        private void setNextExecution(ScheduledJob job)
+        private void setNextExecution(ScheduledJobBase scheduledJob, IContinuum continuum)
         {
-            if (job.PreventReschedule)
+            if (scheduledJob.PreventReschedule)
             {
                 return;
             }
             DateTime next, now = DateTime.UtcNow;
             try
             {
-                next = job.Schedule.NextScheduledTime(job);
+                next = scheduledJob.Schedule.NextScheduledTime(scheduledJob);
             }
             catch (Exception ex)
             {
-                _onScheduleError?.Invoke(new ScheduledJobEventArgs(job), ex);
+                _onScheduleError?.Invoke(new ScheduledJobEventArgs(scheduledJob), ex);
                 return;
             }
             if (next == Chroniton.Constants.Never)
@@ -226,97 +225,37 @@ namespace Chroniton
             }
             if (next < now)
             {
-                switch (job.Job.ScheduleMissedBehavior)
+                switch (scheduledJob.GetJob().ScheduleMissedBehavior)
                 {
                     case ScheduleMissedBehavior.RunAgain:
                         next = now;
                         break;
                     case ScheduleMissedBehavior.SkipExecution:
-                        next = job.Schedule.NextScheduledTime(job);
+                        next = scheduledJob.Schedule.NextScheduledTime(scheduledJob);
                         if (next < now)
                         {
-                            _onScheduleError?.Invoke(new ScheduledJobEventArgs(job), 
+                            _onScheduleError?.Invoke(new ScheduledJobEventArgs(scheduledJob), 
                                 new Exception("The schedule twice returned a time before the end of the previous execution. "));
                             return;
                         }
                         break;
                     case ScheduleMissedBehavior.ThrowException:
-                        _onScheduleError?.Invoke(new ScheduledJobEventArgs(job),
+                        _onScheduleError?.Invoke(new ScheduledJobEventArgs(scheduledJob),
                             new Exception("The schedule returned a time before the end of the previous execution"));
                         return;
                 }
             }
-            queueJob(next, job);
+            rescheduleJob(next, scheduledJob, continuum);
         }
 
-        public IScheduledJob ScheduleJob(ISchedule schedule, IJob job, bool runImmediately)
+        private void rescheduleJob(DateTime next, ScheduledJobBase job, IContinuum continuum)
         {
-            var scheduledJob = new ScheduledJob()
+            if (next != Constants.Never)
             {
-                Job = job,
-                Schedule = schedule
-            };
-            scheduledJob.JobTask = new Func<Task>(() => job.Start(scheduledJob.RunTime));
-            DateTime firstRun = runImmediately ? DateTime.UtcNow : schedule.NextScheduledTime(scheduledJob);
-
-            queueJob(firstRun, scheduledJob);
-            return scheduledJob;
-        }
-
-        public IScheduledJob ScheduleJob(ISchedule schedule, IJob job, DateTime firstRun)
-        {
-            var scheduledJob = new ScheduledJob()
-            {
-                Job = job,
-                Schedule = schedule
-            };
-            scheduledJob.JobTask = new Func<Task>(()=> job.Start(scheduledJob.RunTime));
-
-            queueJob(firstRun, scheduledJob);
-            return scheduledJob;
-        }
-
-        public IScheduledJob ScheduleParameterizedJob<T>(ISchedule schedule, IParameterizedJob<T> job, T parameter, bool runImmediately)
-        {
-            var scheduledJob = new ScheduledJob()
-            {
-                Job = job,
-                Schedule = schedule,
-            };
-            scheduledJob.JobTask = new Func<Task>(() => job.Start(parameter, scheduledJob.RunTime));
-            DateTime firstRun = runImmediately ? DateTime.UtcNow : schedule.NextScheduledTime(scheduledJob);
-
-            queueJob(firstRun, scheduledJob);
-
-            return scheduledJob;
-        }
-
-        public IScheduledJob ScheduleParameterizedJob<T>(ISchedule schedule, IParameterizedJob<T> job, T parameter, DateTime firstRun)
-        {
-            var scheduledJob = new ScheduledJob()
-            {
-                Job = job,
-                Schedule = schedule,
-            };
-            scheduledJob.JobTask = new Func<Task>(() => job.Start(parameter, scheduledJob.RunTime));
-
-            queueJob(firstRun, scheduledJob);
-
-            return scheduledJob;
-        }
-
-        private void queueJob(DateTime nextRun, ScheduledJob scheduledJob)
-        {
-            scheduledJob.RunTime = nextRun;
-            _scheduledQueue.Add(scheduledJob);
-            _onScheduled?.Invoke(new ScheduledJobEventArgs(scheduledJob));
-        }
-
-        public bool StopScheduledJob(IScheduledJob scheduledJob)
-        {
-            ScheduledJob job = (ScheduledJob)scheduledJob;
-            job.PreventReschedule = true;
-            return _scheduledQueue.FindExtract(job);
+                job.RunTime = next;
+                continuum.Add(job);
+                _onScheduled?.Invoke(new ScheduledJobEventArgs(job)); 
+            }
         }
 
         #region Events

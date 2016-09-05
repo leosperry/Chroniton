@@ -20,14 +20,20 @@
         "../ChronitonShared/Events.cs",
         "../ChronitonShared/IChronitonFactory.cs",
         "../ChronitonShared/IContinuum.cs",
+        "../ChronitonShared/IContinuumFactory.cs",
         "../ChronitonShared/IJob.cs",
+        "../ChronitonShared/IJobScheduler.cs",
         "../ChronitonShared/ISchedule.cs",
         "../ChronitonShared/ISingularity.cs",
         "../ChronitonShared/ScheduledJob.cs",
         "../ChronitonShared/ScheduleMissedBehavior.cs",
         "../ChronitonShared/Singularity.cs",
-        "../ChronitonShared/SingularityFactory.cs",
+
+        "../ChronitonShared/Continuums/InMemoryContinuum.cs",
+        "../ChronitonShared/Continuums/LocalFileContinuum.cs",
+
         "../ChronitonShared/Jobs/SimpleJob.cs",
+
         "../ChronitonShared/Schedules/ConstantSchedule.cs",
         "../ChronitonShared/Schedules/EveryXTimeSchedule.cs",
         "../ChronitonShared/Schedules/RunOnceSchedule.cs",

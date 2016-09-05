@@ -133,6 +133,14 @@ namespace Chroniton
             {
                 _started = false;
                 _schedulingThread.Wait();
+                // no more tasks should get added because the scheduling thread has stopped
+                Task[] tasks = new Task[_tasks.Count];
+                // tasks could have been removed before the next line
+                _tasks.CopyTo(tasks, 0);
+                // we need to make sure none are null
+                tasks = tasks.Where(t => t != default(Task)).ToArray();
+
+                Task.WaitAll(tasks);
                 Task.WaitAll(_multiverse.Select(c => c.CleanUp()).ToArray());
             }
         }
@@ -148,8 +156,7 @@ namespace Chroniton
                 SpinWait.SpinUntil(() => _tasks.Count < this.MaximumThreads);
                 foreach (var continuum in _multiverse)
                 {
-                    var scheduledJob = continuum.GetNext();
-                    //if (scheduledJob != null && scheduledJob.RunTime < DateTime.UtcNow)
+                    var scheduledJob = continuum.ExtactNextReady();
                     if (scheduledJob != null)
                     {
                         runJob(scheduledJob, continuum);
@@ -181,26 +188,27 @@ namespace Chroniton
             if (_started)
             {
                 scheduledJob.RunCount++;
-                var task = scheduledJob.Execute(scheduledJob.RunTime);
+                var task = executeAndReschedule(scheduledJob, continuum);
                 _tasks.Add(task);
-                task.ContinueWith(t => jobEnd(task, scheduledJob, continuum));
+                task.ContinueWith(t => _tasks.Remove(t));
             }
         }
 
-        private void jobEnd(Task jobTask, ScheduledJobBase job, IContinuum continuum)
+        private async Task executeAndReschedule(ScheduledJobBase job, IContinuum continuum)
         {
-            if (jobTask.Exception == null)
-            {
-                Task.Run(() => _onSuccess?.Invoke(new ScheduledJobEventArgs(job)));
-            }
-            else
-            {
-                Task.Run(() => _onJobError?.Invoke(new ScheduledJobEventArgs(job),
-                    jobTask.Exception is AggregateException? jobTask.Exception.InnerException : jobTask.Exception));
-            }
-            _tasks.Remove(jobTask);
-
-            setNextExecution(job, continuum);
+            var task = job.Execute(job.RunTime);
+            await task.ContinueWith(jobTask => {
+                if (jobTask.Exception == null)
+                {
+                    Task.Run(() => _onSuccess?.Invoke(new ScheduledJobEventArgs(job)));
+                }
+                else
+                {
+                    Task.Run(() => _onJobError?.Invoke(new ScheduledJobEventArgs(job),
+                        jobTask.Exception is AggregateException ? jobTask.Exception.InnerException : jobTask.Exception));
+                }
+                setNextExecution(job, continuum);
+            });
         }
 
         private void setNextExecution(ScheduledJobBase scheduledJob, IContinuum continuum)

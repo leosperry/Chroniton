@@ -1,9 +1,6 @@
-﻿using Chroniton;
-using Chroniton.Jobs;
+﻿using Chroniton.Jobs;
 using Chroniton.Schedules;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Chroniton.NetCore.Example

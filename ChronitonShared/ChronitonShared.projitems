@@ -10,10 +10,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Continuums\LocalFileContinuum.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Continuums\InMemoryContinuum.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IChronitonFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IContinuum.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IContinuumFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IJob.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IJobScheduler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISingularity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Jobs\SimpleJob.cs" />

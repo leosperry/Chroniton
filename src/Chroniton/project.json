@@ -1,7 +1,7 @@
 {
   "copyright": "Copyright © Leonard Sperry 2016",
   "description": "A library for running tasks on schedules.",
-  "title": "Chroniton.NetCore",
+  "title": "Chroniton",
   "packOptions": {
     "owners": [ "Leonard Sperry" ],
     "summary": "Chroniton is a light-weight, fully customizable, fully integrable, strongly typed, and open source solution for scheduling Tasks.",
@@ -14,7 +14,7 @@
   "version": "1.0.3",
   "dependencies": {
     "NETStandard.Library": "1.6.0",
-    "System.Collections.Concurrent": "4.0.12"
+    "TheCollective": "1.0.1"
   },
   "frameworks": {
     "netstandard1.3": { }

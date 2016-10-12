@@ -1,0 +1,23 @@
+﻿{
+  "version": "1.0.1",
+  "packOptions": {
+    "owners": [ "Leonard Sperry" ],
+    "repository": {
+      "url": "http://chroniton.net"
+    },
+    "licenseUrl": "https://raw.githubusercontent.com/leosperry/Chroniton/master/LICENSE",
+    "tags": [ "TheCollective", "netcore", "coreclr", "collection", "collections", "concurrent", "priorityqueue", "minheap", "maxheap", "hashset" ],
+    "summary": "a library with concurrent collections"
+  },
+  "authors": [ "Leonard Sperry" ],
+  "description": "a library with concurrent collections",
+  "copyright": "Copyright © Leonard Sperry 2016",
+  "title": "TheCollective",
+  "dependencies": {
+    "NETStandard.Library": "1.6.0",
+    "System.Collections.Concurrent": "4.0.12"
+  },
+  "frameworks": {
+    "netstandard1.1": { }
+  }
+}

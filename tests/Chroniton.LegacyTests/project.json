@@ -1,11 +1,12 @@
-﻿{
+{
   "version": "1.0.0-*",
   "dependencies": {
     "Chroniton": "1.0.3",
     "Moq": "4.6.38-alpha",
     "NETStandard.Library": "1.6.0",
     "NUnit": "3.5.0",
-    "dotnet-test-nunit": "3.4.0-beta-2"
+    "dotnet-test-nunit": "3.4.0-beta-2",
+    "TheCollective": "1.0.1"
   },
   "testRunner": "nunit",
   "frameworks": {

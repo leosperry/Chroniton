@@ -32,6 +32,8 @@ namespace Chroniton.Tests
 			ManualResetEvent errorManualReset;
 			ManualResetEvent scheduleErrorManualReset;
 			Exception reportedException;
+			IJobScheduler scheduler = new ChronitonFactory().GetJobScheduler<InMemoryContinuum>();
+			InMemoryContinuum _continuum = new ContinuumFactory().GetContinuum<InMemoryContinuum>();
 
 			[SetUp]
 			public void Setup()
@@ -42,7 +44,7 @@ namespace Chroniton.Tests
 				scheduledTimes = new Queue<DateTime>();
 
 				MockSchedule = new Mock<ISchedule>();
-				MockSchedule.Setup(s => s.NextScheduledTime(It.IsAny<IScheduledJob>()))
+				MockSchedule.Setup(s => s.NextScheduledTime(It.IsAny<ScheduledJobBase>()))
 					.Returns(() => scheduledTimes.Count > 0 ? scheduledTimes.Dequeue() : DateTime.MaxValue);
 
 				successManualReset = new ManualResetEvent(false);
@@ -81,6 +83,7 @@ namespace Chroniton.Tests
 				UnderTest.OnScheduleError -= UnderTest_OnScheduleError;
 				successManualReset.Reset();
 				errorManualReset.Reset();
+				_continuum.ClearAll();
 			}
 
 			public class ScheduleTests : FunctionalTests
@@ -101,7 +104,7 @@ namespace Chroniton.Tests
 					[Test]
 					public void ShouldRun()
 					{
-						UnderTest.ScheduleJob(MockSchedule.Object, MockJob.Object, true);
+						scheduler.ScheduleJob(MockSchedule.Object, MockJob.Object, true);
 						UnderTest.Start();
 						Assert.True(successManualReset.WaitOne(1000));
 					}
@@ -109,7 +112,7 @@ namespace Chroniton.Tests
 					[Test]
 					public void ParameterizedShouldRun()
 					{
-						UnderTest.ScheduleParameterizedJob(MockSchedule.Object, MockParamJob.Object, "hello", true);
+						scheduler.ScheduleParameterizedJob(MockSchedule.Object, MockParamJob.Object, "hello", true);
 						UnderTest.Start();
 						Assert.True(successManualReset.WaitOne(5000));
 					}
@@ -126,7 +129,9 @@ namespace Chroniton.Tests
 					[Test]
 					public void ShouldRunOnSchedule()
 					{
-						UnderTest.ScheduleJob(MockSchedule.Object, MockJob.Object, false);
+						scheduledTimes.Enqueue(DateTime.UtcNow.AddSeconds(4));
+
+						scheduler.ScheduleJob(MockSchedule.Object, MockJob.Object, false);
 						UnderTest.Start();
 						Assert.False(successManualReset.WaitOne(200));
 						Assert.True(successManualReset.WaitOne(5000));
@@ -135,9 +140,11 @@ namespace Chroniton.Tests
 					[Test]
 					public void ParameterizedShouldRunOnSchedule()
 					{
-						UnderTest.ScheduleParameterizedJob(MockSchedule.Object, MockParamJob.Object, "", false);
+						scheduledTimes.Enqueue(DateTime.UtcNow.AddSeconds(4));
+
+						scheduler.ScheduleParameterizedJob(MockSchedule.Object, MockParamJob.Object, "", false);
 						UnderTest.Start();
-						Assert.False(successManualReset.WaitOne(200));
+						Assert.False(successManualReset.WaitOne(2000));
 						Assert.True(successManualReset.WaitOne(5000));
 					}
 				}
@@ -148,7 +155,7 @@ namespace Chroniton.Tests
 					public void ShouldRunLater()
 					{
 						var startTime = DateTime.UtcNow.Add(TimeSpan.FromSeconds(4));
-						UnderTest.ScheduleJob(MockSchedule.Object, MockJob.Object, startTime);
+						scheduler.ScheduleJob(MockSchedule.Object, MockJob.Object, startTime);
 						UnderTest.Start();
 						Assert.False(successManualReset.WaitOne(200));
 						Assert.True(successManualReset.WaitOne(5000));
@@ -159,10 +166,10 @@ namespace Chroniton.Tests
 					{
 						var startTime = DateTime.UtcNow.Add(TimeSpan.FromSeconds(4));
 
-						UnderTest.ScheduleParameterizedJob(MockSchedule.Object, MockParamJob.Object, "hello", startTime);
+						scheduler.ScheduleParameterizedJob(MockSchedule.Object, MockParamJob.Object, "hello", startTime);
 						UnderTest.Start();
 						Assert.False(successManualReset.WaitOne(200));
-						Assert.True(successManualReset.WaitOne(5000));
+						Assert.True(successManualReset.WaitOne(25000));
 					}
 				}
 			}
@@ -185,8 +192,8 @@ namespace Chroniton.Tests
 				[Test]
 				public void ShouldWaitAndExecute()
 				{
-					UnderTest.ScheduleJob(MockSchedule.Object, longRunningJob, true);
-					UnderTest.ScheduleJob(MockSchedule.Object, waitingJob, true);
+					scheduler.ScheduleJob(MockSchedule.Object, longRunningJob, true);
+					scheduler.ScheduleJob(MockSchedule.Object, waitingJob, true);
 
 					UnderTest.Start();
 
@@ -205,7 +212,7 @@ namespace Chroniton.Tests
 					exeptionJob = new Mock<IJob>();
 					exeptionJob.Setup(j => j.Start(It.IsAny<DateTime>())).Throws(new DivideByZeroException());
 
-					UnderTest.ScheduleJob(MockSchedule.Object, exeptionJob.Object, true);
+					scheduler.ScheduleJob(MockSchedule.Object, exeptionJob.Object, true);
 					UnderTest.Start();
 					Assert.True(errorManualReset.WaitOne());
 					Assert.IsInstanceOf<DivideByZeroException>(reportedException);
@@ -215,7 +222,7 @@ namespace Chroniton.Tests
 				public void ShouldReportErrorInAsyncTask()
 				{
 					SimpleJob testJob = new SimpleJob(async (dt) => await Task.Run(() => { throw new DivideByZeroException(); }));
-					UnderTest.ScheduleJob(MockSchedule.Object, exeptionJob.Object, true);
+					scheduler.ScheduleJob(MockSchedule.Object, exeptionJob.Object, true);
 					UnderTest.Start();
 					Assert.True(errorManualReset.WaitOne());
 					Assert.IsInstanceOf<DivideByZeroException>(reportedException);
@@ -241,9 +248,9 @@ namespace Chroniton.Tests
 					public void ShouldNotRun()
 					{
 						var job = new SimpleJob((dt) => { });
-						UnderTest.ScheduleJob(TestSchedule, job, true);
+						scheduler.ScheduleJob(TestSchedule, job, true);
 						UnderTest.Start();
-						Assert.True(successManualReset.WaitOne());
+						Assert.True(successManualReset.WaitOne(205000));
 						successManualReset.Reset();
 						Assert.False(successManualReset.WaitOne(500));
 					}
@@ -261,7 +268,7 @@ namespace Chroniton.Tests
 					public void ShouldExecute()
 					{
 						var job = new SimpleJob((dt) => { });
-						UnderTest.ScheduleJob(TestSchedule, job, true);
+						scheduler.ScheduleJob(TestSchedule, job, true);
 						UnderTest.Start();
 						Assert.True(successManualReset.WaitOne());
 						successManualReset.Reset();
@@ -282,7 +289,7 @@ namespace Chroniton.Tests
 					{
 						var job = new SimpleJob((dt) => { })
 						{ ScheduleMissedBehavior = ScheduleMissedBehavior.RunAgain };
-						UnderTest.ScheduleJob(TestSchedule, job, true);
+						scheduler.ScheduleJob(TestSchedule, job, true);
 						UnderTest.Start();
 						Assert.True(successManualReset.WaitOne());
 						successManualReset.Reset();
@@ -294,7 +301,7 @@ namespace Chroniton.Tests
 					{
 						var job = new SimpleJob((dt) => TestSchedule.NextSchedule = NextScheduleType.Skip)
 						{ ScheduleMissedBehavior = ScheduleMissedBehavior.SkipExecution };
-						UnderTest.ScheduleJob(TestSchedule, job, true);
+						scheduler.ScheduleJob(TestSchedule, job, true);
 						UnderTest.Start();
 						Assert.True(successManualReset.WaitOne());
 						successManualReset.Reset();
@@ -308,7 +315,7 @@ namespace Chroniton.Tests
 					{
 						var job = new SimpleJob((dt) => { })
 						{ ScheduleMissedBehavior = ScheduleMissedBehavior.SkipExecution };
-						UnderTest.ScheduleJob(TestSchedule, job, true);
+						scheduler.ScheduleJob(TestSchedule, job, true);
 						UnderTest.Start();
 						Assert.True(successManualReset.WaitOne());
 						successManualReset.Reset();
@@ -320,7 +327,7 @@ namespace Chroniton.Tests
 					{
 						var job = new SimpleJob((dt) => { })
 						{ ScheduleMissedBehavior = ScheduleMissedBehavior.ThrowException };
-						UnderTest.ScheduleJob(TestSchedule, job, true);
+						scheduler.ScheduleJob(TestSchedule, job, true);
 						UnderTest.Start();
 						Assert.True(successManualReset.WaitOne());
 						successManualReset.Reset();
@@ -336,7 +343,7 @@ namespace Chroniton.Tests
 					public void SetException()
 					{
 						MockSchedule = new Mock<ISchedule>();
-						MockSchedule.Setup(s => s.NextScheduledTime(It.IsAny<IScheduledJob>()))
+						MockSchedule.Setup(s => s.NextScheduledTime(It.IsAny<ScheduledJob>()))
 							.Throws(new DivideByZeroException());
 
 						MockJob = new Mock<IJob>();
@@ -349,7 +356,7 @@ namespace Chroniton.Tests
 					{
 						UnderTest.OnScheduleError += UnderTest_OnScheduleError1;
 						reset = new ManualResetEvent(false);
-						UnderTest.ScheduleJob(MockSchedule.Object, MockJob.Object, true);
+						scheduler.ScheduleJob(MockSchedule.Object, MockJob.Object, true);
 						UnderTest.Start();
 						Assert.True(reset.WaitOne());
 						UnderTest.OnScheduleError -= UnderTest_OnScheduleError1;
@@ -379,9 +386,9 @@ namespace Chroniton.Tests
 				public void ShouldStop()
 				{
 					UnderTest.MaximumThreads = 1;
-					var scheduledJob = UnderTest.ScheduleJob(TestSchedule, TestJob, true);
+					var scheduledJob = scheduler.ScheduleJob(TestSchedule, TestJob, true);
 					UnderTest.Start();
-					UnderTest.StopScheduledJob(scheduledJob);
+					scheduler.StopScheduledJob(scheduledJob);
 					successManualReset.WaitOne(200);
 					successManualReset.Reset();
 					Assert.False(successManualReset.WaitOne(2000));
@@ -397,17 +404,17 @@ namespace Chroniton.Tests
 					{
 						Name = "long running job"
 					};
-					UnderTest.ScheduleJob(TestSchedule, longRunningJob, true);
+					scheduler.ScheduleJob(TestSchedule, longRunningJob, true);
 					string state = "never run";
 					var jobToBeRemoved = new SimpleJob((dt) => Task.Run(() => state = "I ran"))
 					{
 						Name = "job to be removed"
 					};
 
-					var scheduledJob = UnderTest.ScheduleJob(TestSchedule, jobToBeRemoved, true);
+					var scheduledJob = scheduler.ScheduleJob(TestSchedule, jobToBeRemoved, true);
 					UnderTest.Start();
 
-					UnderTest.StopScheduledJob(scheduledJob);
+					scheduler.StopScheduledJob(scheduledJob);
 
 					Assert.AreEqual("never run", state);
 				}
@@ -426,7 +433,7 @@ namespace Chroniton.Tests
 
 		public NextScheduleType NextSchedule { get; set; } = NextScheduleType.Now;
 
-		public DateTime NextScheduledTime(IScheduledJob scheduledJob)
+		public DateTime NextScheduledTime(ScheduledJobBase scheduledJob)
 		{
 			switch (NextSchedule)
 			{
